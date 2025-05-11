@@ -1,0 +1,7 @@
+main
+	setup
+	forward
+		our_delay_ms
+	backward
+		our_delay_ms
+	stop
