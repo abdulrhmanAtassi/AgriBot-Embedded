@@ -1,0 +1,14 @@
+main
+	setupPWM
+		setSpeedLeft
+		setSpeedRight
+	init_ultrasonic
+	motors_forward
+		setSpeedLeft
+		setSpeedRight
+	read_distance_cm
+		trigger_ultrasonic
+		Div_16X16_U
+	motors_stop
+		setSpeedLeft
+		setSpeedRight

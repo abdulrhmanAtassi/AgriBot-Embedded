@@ -1,132 +1,139 @@
-#define TRIG LATBbits.LATB0
-#define ECHO PORTBbits.RB1
-void our_delay_ms(unsigned int ms) {
-    unsigned int i, j;
-    for (i = 0; i < ms; i++) {
-        for (j = 0; j < 111; j++) NOP();
-    }
+/******************************************************************************
+ * AgriBot – PIC16F877A + 2×L298N + HC-SR04 demo
+ * Compiler : mikroC PRO for PIC
+ * Fosc     : 20 MHz
+ ******************************************************************************/
+#define _XTAL_FREQ 20000000   // only needed if you use __delay_xx – not used here
+
+/* === Pin assignments ===================================================== */
+#define TRIG  PORTB.F0    // RB0 – trigger output
+#define ECHO  PORTB.F1    // RB1 – echo  input
+
+/* === Tiny helpers ======================================================== */
+void setSpeedLeft (unsigned char duty) { CCPR1L = duty; }   // 0-255
+void setSpeedRight(unsigned char duty) { CCPR2L = duty; }
+
+/* === PWM setup =========================================================== */
+void setupPWM(void)
+{
+    /* RC2 = CCP1, RC1 = CCP2  → outputs */
+    TRISC.F2 = 0;   // RC2
+    TRISC.F1 = 0;   // RC1
+
+    /* CCP modules in PWM mode */
+    CCP1CON = 0b00001100;     // CCP1 PWM
+    CCP2CON = 0b00001100;     // CCP2 PWM
+
+    /* Timer2 drives both PWMs  –  about 5 kHz  */
+    PR2   = 249;              // period
+    T2CON = 0b00000101;       // prescaler 4, TMR2 on
+
+    setSpeedLeft (128);       // 50 %
+    setSpeedRight(128);       // 50 %
 }
 
-void setupPWM() {
-    // Set RC2 (CCP1) and RC1 (CCP2) as output
-    TRISC &= 0b11110001;
-
-    // Set PWM mode for CCP1 and CCP2
-    CCP1CON = 0b00001100;  // PWM mode
-    CCP2CON = 0b00001100;  // PWM mode
-
-    // Set PWM frequency (~5kHz for Fosc = 20MHz)
-    PR2 = 249;
-    T2CON = 0b00000101; // Prescaler = 4, Timer2 ON
-
-    // Set initial duty cycles (e.g., 50%)
-    CCPR1L = 128; // Left motors
-    CCPR2L = 128; // Right motors
+/* === Ultrasonic sensor ====================================================*/
+void init_ultrasonic(void)
+{
+    TRISB.F0 = 0;   // TRIG as output
+    TRISB.F1 = 1;   // ECHO as input
 }
 
-
-
-void init_ultrasonic() {
-    TRISB &= 0b00000010; // TRIG = output
-//    TRISB1 = 1; // ECHO = input
-}
-
-void trigger_ultrasonic() {
+void trigger_ultrasonic(void)
+{
     TRIG = 0;
-    our_delay_ms(2);
+    Delay_us(2);
+
     TRIG = 1;
-    our_delay_ms(10);  // 10 microsecond pulse
+    Delay_us(10);            // 10 µs HIGH pulse
+
     TRIG = 0;
 }
 
-unsigned int read_distance_cm() {
-    unsigned int time = 0;
+unsigned int read_distance_cm(void)
+{
+     unsigned int ticks;
 
-    trigger_ultrasonic();
+     trigger_ultrasonic();
 
-    // Wait for echo to go HIGH
-    while (!ECHO);
+     /* wait echo HIGH, timeout omitted for brevity */
+     while (!ECHO);
 
-    // Measure how long ECHO stays HIGH
-    while (ECHO) {
-        our_delay_ms(1);
-        time++;
-    }
+     TMR1H = 0;                 // clear 16-bit timer
+     TMR1L = 0;
+     T1CON = 0x01;              // Timer-1 on, prescaler 1
 
-    // Convert time to cm (Speed of sound = 343 m/s)
-    // time * 0.034 / 2 ? simplified to:
-    return time / 58;
+     while (ECHO);              // stay here while echo HIGH
+
+     T1CON = 0x00;              // stop timer
+     ticks = ((unsigned int)TMR1H << 8) | TMR1L;
+
+     /*  ticks * 0.2 µs  → distance(cm) = t/58
+         so  distance = ticks * 0.2 / 58  = ticks / 290                */
+     return ticks / 290;        // ≈ distance in cm
 }
 
-void setSpeedLeft(unsigned int duty){
-     CCPR1L = duty;
+/* === Motor direction helpers (PORTD pattern) ============================= */
+void motors_stop(void)
+{
+    PORTD = 0x00;
+    setSpeedLeft(0);
+    setSpeedRight(0);
 }
 
-void setSpeedRight(unsigned int duty){
-     CCPR2L = duty;
+void motors_forward(void)
+{
+    PORTD = 0b01011010;            // forward
+    setSpeedLeft(150);
+    setSpeedRight(150);
 }
 
-void setup(){
-     TRISD = 0x00; // Set PORTD as output
-     PORTD = 0x00; // All moters off initally
+void motors_backward(void)
+{
+    PORTD = 0b10100101;            // backward
+    setSpeedLeft(150);
+    setSpeedRight(150);
 }
 
-void stop() {
-     PORTD = 0b00000000;
-     setSpeedLeft(0);
-     setSpeedRight(0);
+void motors_left(void)
+{
+    PORTD = 0b01010101;            // turn left
+    setSpeedLeft(150);
+    setSpeedRight(150);
 }
-void left(){
-     PORTD = 0b01010101;
-     setSpeedLeft(150);
-     setSpeedRight(150);
-     our_delay_ms(500);
-     unsigned int dist =  read_distance_cm();
-     if(dist < 20){
-          stop();
+
+void motors_right(void)
+{
+    PORTD = 0b10101010;            // turn right
+    setSpeedLeft(150);
+    setSpeedRight(150);
+}
+
+/* === Main ================================================================ */
+void main(void)
+{
+    TRISD = 0x00;    // PORTD as output for IN1-IN4
+    PORTD = 0x00;
+
+    setupPWM();
+    init_ultrasonic();
+
+     while (1)
+     {
+        motors_forward();
+        Delay_ms(400);
+        if (read_distance_cm() < 20) motors_stop();
+
+     //    motors_left();
+     //    Delay_ms(400);
+     //    if (read_distance_cm() < 20) motors_stop();
+
+     //    motors_right();
+     //    Delay_ms(400);
+     //    if (read_distance_cm() < 20) motors_stop();
+
+     //    motors_backward();
+     //    Delay_ms(400);
+     //    if (read_distance_cm() < 20) motors_stop();
      }
-}
-
-void right(){
-     PORTD = 0b10101010;
-     setSpeedLeft(150);
-     setSpeedRight(150);
-     our_delay_ms(500);
-     unsigned int dist =  read_distance_cm();
-     if(dist < 20){
-          stop();
-     }
-}
-
-void forward(){
-     PORTD = 0b01011010;
-     setSpeedLeft(150);
-     setSpeedRight(150);
-     our_delay_ms(500);
-     unsigned int dist =  read_distance_cm();
-     if(dist < 20){
-          stop();
-     }
-}
-
-void backward(){
-     PORTD = 0b10100101;
-     setSpeedLeft(150);
-     setSpeedRight(150);
-     our_delay_ms(500);
-     unsigned int dist =  read_distance_cm();
-     if(dist < 20){
-          stop();
-     }
-}
-
-void main() {
-     setup();
-     setupPWM();
-     init_ultrasonic();
-     left();
-     forward();
-     right();
-     backward();
-     stop();
 }
