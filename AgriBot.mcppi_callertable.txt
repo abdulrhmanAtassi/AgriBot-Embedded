@@ -1,7 +1,22 @@
 main
 	setup
+	setupPWM
+	left
+		setSpeedLeft
+		setSpeedRight
+		our_delay_ms
 	forward
+		setSpeedLeft
+		setSpeedRight
+		our_delay_ms
+	right
+		setSpeedLeft
+		setSpeedRight
 		our_delay_ms
 	backward
+		setSpeedLeft
+		setSpeedRight
 		our_delay_ms
 	stop
+		setSpeedLeft
+		setSpeedRight

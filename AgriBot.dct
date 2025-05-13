@@ -461,7 +461,10 @@ setfdz32
 setfov32
 setfun32
 setiov3224
+setspeedleft
+setspeedright
 setup
+setuppwm
 smp
 smp_bit
 spbrg
