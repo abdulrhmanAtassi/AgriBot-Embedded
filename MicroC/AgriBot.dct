@@ -152,6 +152,8 @@ cren
 cren_bit
 csrc
 csrc_bit
+cutter_off
+cutter_on
 cvr0
 cvr0_bit
 cvr1
@@ -252,6 +254,7 @@ ibov_trise_bit
 ics_auto
 ics_off
 indf
+initcutter
 int2double
 intcon
 inte

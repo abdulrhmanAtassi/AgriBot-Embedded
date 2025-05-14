@@ -1,5 +1,5 @@
-#line 1 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/AgriBot.c"
-#line 13 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/AgriBot.c"
+#line 1 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/MicroC/AgriBot.c"
+#line 14 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/MicroC/AgriBot.c"
 void our_delay_ms(unsigned int ms) {
  unsigned int i, j;
  for (i = 0; i < ms; i++) {
@@ -9,6 +9,15 @@ void our_delay_ms(unsigned int ms) {
 
 
 
+
+
+void initCutter(void) {
+ TRISB.F4 = 0;
+ PORTB.F4 = 0;
+}
+
+void cutter_on(void) { PORTB.F4 = 1; }
+void cutter_off(void) { PORTB.F4 = 0; }
 
 
 void setSpeedLeft (unsigned char duty) { CCPR1L = duty; }
@@ -72,9 +81,9 @@ void motors_right(void)
 
 
 void trigger_pulse(){
-  PORTB.F2  = 1;
+  PORTB.F0  = 1;
  delay_us(10);
-  PORTB.F2  = 0;
+  PORTB.F0  = 0;
 }
 
 unsigned int measure_distance(){
@@ -145,24 +154,8 @@ void main(void)
 
 
 unsigned int distance;
-setup();
-
-
- setupPWM();
-
-
-
- while (1)
- {
- while (1) {
- distance = measure_distance();
- if (distance < 20u) {
- motors_stop();
- continue;
- }
- motors_forward();
- Delay_ms(100);
- }
-#line 187 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/AgriBot.c"
- }
+ setup();
+ initCutter();
+ cutter_on();
+#line 196 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/MicroC/AgriBot.c"
 }

@@ -8,7 +8,8 @@
 /* === Pin assignments ===================================================== */
 #define TRIG  PORTB.F0    // RB0 – trigger output
 #define ECHO  PORTB.F1    // RB1 – echo  input
-
+//#define Cutter     PORTB.F4;
+//#define CutterDir  TRISB.F4;
 /* === Tiny helpers ======================================================== */
 void our_delay_ms(unsigned int ms) {
     unsigned int i, j;
@@ -19,6 +20,15 @@ void our_delay_ms(unsigned int ms) {
 
 
 
+/* === Cutter setup =========================================================== */
+
+void initCutter(void) {
+     TRISB.F4 = 0;
+     PORTB.F4    = 0;
+}
+
+void cutter_on(void)  { PORTB.F4 = 1; }
+void cutter_off(void) { PORTB.F4 = 0; }
 
 
 void setSpeedLeft (unsigned char duty) { CCPR1L = duty; }   // 0-255
@@ -155,34 +165,32 @@ void main(void)
 //     PORTD = 0x00;
 
 unsigned int distance;  
-setup();
+    setup();    
+    initCutter();
+    cutter_on();
+    // setupPWM();
 
+    //  while (1)
+    //  {
+    //     while (1) {
+    //         distance = measure_distance();
+    //         if (distance < 20u) {
+    //             motors_stop();
+    //             continue;        // skip to next reading
+    //         }
+    //     // motors_forward();
+    //     Delay_ms(100);
+    // }
+    //  //    motors_left();
+    //  //    Delay_ms(400);
+    //  //    if (read_distance_cm() < 20) motors_stop();
 
-    setupPWM();
-    //init_ultrasonic();
-//    TRISB = 0x00;
-//     PORTB = 0xff;
-     while (1)
-     {
-        while (1) {
-            distance = measure_distance();
-            if (distance < 20u) {
-                motors_stop();
-                continue;        // skip to next reading
-            }
-        motors_forward();
-        Delay_ms(100);
-    }
-     //    motors_left();
-     //    Delay_ms(400);
-     //    if (read_distance_cm() < 20) motors_stop();
+    //  //    motors_right();
+    //  //    Delay_ms(400);
+    //  //    if (read_distance_cm() < 20) motors_stop();
 
-     //    motors_right();
-     //    Delay_ms(400);
-     //    if (read_distance_cm() < 20) motors_stop();
-
-     //    motors_backward();
-     //    Delay_ms(400);
-     //    if (read_distance_cm() < 20) motors_stop();
-     }
+    //  //    motors_backward();
+    //  //    Delay_ms(400);
+    //  //    if (read_distance_cm() < 20) motors_stop();
+    //  }
 }
