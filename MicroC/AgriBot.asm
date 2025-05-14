@@ -1,0 +1,386 @@
+
+_our_delay_ms:
+
+;AgriBot.c,13 :: 		void our_delay_ms(unsigned int ms) {
+;AgriBot.c,15 :: 		for (i = 0; i < ms; i++) {
+	CLRF       R1+0
+	CLRF       R1+1
+L_our_delay_ms0:
+	MOVF       FARG_our_delay_ms_ms+1, 0
+	SUBWF      R1+1, 0
+	BTFSS      STATUS+0, 2
+	GOTO       L__our_delay_ms20
+	MOVF       FARG_our_delay_ms_ms+0, 0
+	SUBWF      R1+0, 0
+L__our_delay_ms20:
+	BTFSC      STATUS+0, 0
+	GOTO       L_our_delay_ms1
+;AgriBot.c,16 :: 		for (j = 0; j < 111; j++) NOP();
+	CLRF       R3+0
+	CLRF       R3+1
+L_our_delay_ms3:
+	MOVLW      0
+	SUBWF      R3+1, 0
+	BTFSS      STATUS+0, 2
+	GOTO       L__our_delay_ms21
+	MOVLW      111
+	SUBWF      R3+0, 0
+L__our_delay_ms21:
+	BTFSC      STATUS+0, 0
+	GOTO       L_our_delay_ms4
+	NOP
+	INCF       R3+0, 1
+	BTFSC      STATUS+0, 2
+	INCF       R3+1, 1
+	GOTO       L_our_delay_ms3
+L_our_delay_ms4:
+;AgriBot.c,15 :: 		for (i = 0; i < ms; i++) {
+	INCF       R1+0, 1
+	BTFSC      STATUS+0, 2
+	INCF       R1+1, 1
+;AgriBot.c,17 :: 		}
+	GOTO       L_our_delay_ms0
+L_our_delay_ms1:
+;AgriBot.c,18 :: 		}
+L_end_our_delay_ms:
+	RETURN
+; end of _our_delay_ms
+
+_setSpeedLeft:
+
+;AgriBot.c,24 :: 		void setSpeedLeft (unsigned char duty) { CCPR1L = duty; }   // 0-255
+	MOVF       FARG_setSpeedLeft_duty+0, 0
+	MOVWF      CCPR1L+0
+L_end_setSpeedLeft:
+	RETURN
+; end of _setSpeedLeft
+
+_setSpeedRight:
+
+;AgriBot.c,25 :: 		void setSpeedRight(unsigned char duty) { CCPR2L = duty; }
+	MOVF       FARG_setSpeedRight_duty+0, 0
+	MOVWF      CCPR2L+0
+L_end_setSpeedRight:
+	RETURN
+; end of _setSpeedRight
+
+_setupPWM:
+
+;AgriBot.c,28 :: 		void setupPWM(void)
+;AgriBot.c,31 :: 		TRISC.F2 = 0;   // RC2
+	BCF        TRISC+0, 2
+;AgriBot.c,32 :: 		TRISC.F1 = 0;   // RC1
+	BCF        TRISC+0, 1
+;AgriBot.c,35 :: 		CCP1CON = 0b00001100;     // CCP1 PWM
+	MOVLW      12
+	MOVWF      CCP1CON+0
+;AgriBot.c,36 :: 		CCP2CON = 0b00001100;     // CCP2 PWM
+	MOVLW      12
+	MOVWF      CCP2CON+0
+;AgriBot.c,39 :: 		PR2   = 249;              // period
+	MOVLW      249
+	MOVWF      PR2+0
+;AgriBot.c,40 :: 		T2CON = 0b00000101;       // prescaler 4, TMR2 on
+	MOVLW      5
+	MOVWF      T2CON+0
+;AgriBot.c,42 :: 		setSpeedLeft (128);       // 50 %
+	MOVLW      128
+	MOVWF      FARG_setSpeedLeft_duty+0
+	CALL       _setSpeedLeft+0
+;AgriBot.c,43 :: 		setSpeedRight(128);       // 50 %
+	MOVLW      128
+	MOVWF      FARG_setSpeedRight_duty+0
+	CALL       _setSpeedRight+0
+;AgriBot.c,44 :: 		}
+L_end_setupPWM:
+	RETURN
+; end of _setupPWM
+
+_motors_stop:
+
+;AgriBot.c,47 :: 		void motors_stop(void)
+;AgriBot.c,49 :: 		PORTD = 0x00;
+	CLRF       PORTD+0
+;AgriBot.c,50 :: 		setSpeedLeft(0);
+	CLRF       FARG_setSpeedLeft_duty+0
+	CALL       _setSpeedLeft+0
+;AgriBot.c,51 :: 		setSpeedRight(0);
+	CLRF       FARG_setSpeedRight_duty+0
+	CALL       _setSpeedRight+0
+;AgriBot.c,52 :: 		}
+L_end_motors_stop:
+	RETURN
+; end of _motors_stop
+
+_motors_forward:
+
+;AgriBot.c,54 :: 		void motors_forward(void)
+;AgriBot.c,56 :: 		PORTD = 0b01011010;            // forward
+	MOVLW      90
+	MOVWF      PORTD+0
+;AgriBot.c,57 :: 		setSpeedLeft(150);
+	MOVLW      150
+	MOVWF      FARG_setSpeedLeft_duty+0
+	CALL       _setSpeedLeft+0
+;AgriBot.c,58 :: 		setSpeedRight(150);
+	MOVLW      150
+	MOVWF      FARG_setSpeedRight_duty+0
+	CALL       _setSpeedRight+0
+;AgriBot.c,59 :: 		}
+L_end_motors_forward:
+	RETURN
+; end of _motors_forward
+
+_motors_backward:
+
+;AgriBot.c,61 :: 		void motors_backward(void)
+;AgriBot.c,63 :: 		PORTD = 0b10100101;            // backward
+	MOVLW      165
+	MOVWF      PORTD+0
+;AgriBot.c,64 :: 		setSpeedLeft(150);
+	MOVLW      150
+	MOVWF      FARG_setSpeedLeft_duty+0
+	CALL       _setSpeedLeft+0
+;AgriBot.c,65 :: 		setSpeedRight(150);
+	MOVLW      150
+	MOVWF      FARG_setSpeedRight_duty+0
+	CALL       _setSpeedRight+0
+;AgriBot.c,66 :: 		}
+L_end_motors_backward:
+	RETURN
+; end of _motors_backward
+
+_motors_left:
+
+;AgriBot.c,68 :: 		void motors_left(void)
+;AgriBot.c,70 :: 		PORTD = 0b01010101;            // turn left
+	MOVLW      85
+	MOVWF      PORTD+0
+;AgriBot.c,71 :: 		setSpeedLeft(150);
+	MOVLW      150
+	MOVWF      FARG_setSpeedLeft_duty+0
+	CALL       _setSpeedLeft+0
+;AgriBot.c,72 :: 		setSpeedRight(150);
+	MOVLW      150
+	MOVWF      FARG_setSpeedRight_duty+0
+	CALL       _setSpeedRight+0
+;AgriBot.c,73 :: 		}
+L_end_motors_left:
+	RETURN
+; end of _motors_left
+
+_motors_right:
+
+;AgriBot.c,75 :: 		void motors_right(void)
+;AgriBot.c,77 :: 		PORTD = 0b10101010;            // turn right
+	MOVLW      170
+	MOVWF      PORTD+0
+;AgriBot.c,78 :: 		setSpeedLeft(150);
+	MOVLW      150
+	MOVWF      FARG_setSpeedLeft_duty+0
+	CALL       _setSpeedLeft+0
+;AgriBot.c,79 :: 		setSpeedRight(150);
+	MOVLW      150
+	MOVWF      FARG_setSpeedRight_duty+0
+	CALL       _setSpeedRight+0
+;AgriBot.c,80 :: 		}
+L_end_motors_right:
+	RETURN
+; end of _motors_right
+
+_trigger_pulse:
+
+;AgriBot.c,84 :: 		void trigger_pulse(){
+;AgriBot.c,85 :: 		TRIG = 1;  // Set Trigger pin high
+	BSF        PORTB+0, 2
+;AgriBot.c,86 :: 		delay_us(10);  // 10us pulse
+	MOVLW      6
+	MOVWF      R13+0
+L_trigger_pulse6:
+	DECFSZ     R13+0, 1
+	GOTO       L_trigger_pulse6
+	NOP
+;AgriBot.c,87 :: 		TRIG = 0;  // Set Trigger pin low
+	BCF        PORTB+0, 2
+;AgriBot.c,88 :: 		}
+L_end_trigger_pulse:
+	RETURN
+; end of _trigger_pulse
+
+_measure_distance:
+
+;AgriBot.c,90 :: 		unsigned int measure_distance(){
+;AgriBot.c,91 :: 		unsigned int time = 0;
+;AgriBot.c,94 :: 		trigger_pulse();
+	CALL       _trigger_pulse+0
+;AgriBot.c,97 :: 		timeout = 0xFFFF;
+	MOVLW      255
+	MOVWF      measure_distance_timeout_L0+0
+	MOVLW      255
+	MOVWF      measure_distance_timeout_L0+1
+;AgriBot.c,98 :: 		while (!(PORTB & 0x02)) {
+L_measure_distance7:
+	BTFSC      PORTB+0, 1
+	GOTO       L_measure_distance8
+;AgriBot.c,99 :: 		if (--timeout == 0) {
+	MOVLW      1
+	SUBWF      measure_distance_timeout_L0+0, 1
+	BTFSS      STATUS+0, 0
+	DECF       measure_distance_timeout_L0+1, 1
+	MOVLW      0
+	XORWF      measure_distance_timeout_L0+1, 0
+	BTFSS      STATUS+0, 2
+	GOTO       L__measure_distance32
+	MOVLW      0
+	XORWF      measure_distance_timeout_L0+0, 0
+L__measure_distance32:
+	BTFSS      STATUS+0, 2
+	GOTO       L_measure_distance9
+;AgriBot.c,100 :: 		return 0;  // Timeout prevention, no object detected
+	CLRF       R0+0
+	CLRF       R0+1
+	GOTO       L_end_measure_distance
+;AgriBot.c,101 :: 		}
+L_measure_distance9:
+;AgriBot.c,102 :: 		}
+	GOTO       L_measure_distance7
+L_measure_distance8:
+;AgriBot.c,105 :: 		TMR1H = 0;
+	CLRF       TMR1H+0
+;AgriBot.c,106 :: 		TMR1L = 0;
+	CLRF       TMR1L+0
+;AgriBot.c,107 :: 		T1CON = 0x01;  // Enable Timer1 with no prescaler
+	MOVLW      1
+	MOVWF      T1CON+0
+;AgriBot.c,110 :: 		timeout = 0xFFFF;
+	MOVLW      255
+	MOVWF      measure_distance_timeout_L0+0
+	MOVLW      255
+	MOVWF      measure_distance_timeout_L0+1
+;AgriBot.c,111 :: 		while (PORTB & 0x02) {
+L_measure_distance10:
+	BTFSS      PORTB+0, 1
+	GOTO       L_measure_distance11
+;AgriBot.c,112 :: 		if (--timeout == 0) {
+	MOVLW      1
+	SUBWF      measure_distance_timeout_L0+0, 1
+	BTFSS      STATUS+0, 0
+	DECF       measure_distance_timeout_L0+1, 1
+	MOVLW      0
+	XORWF      measure_distance_timeout_L0+1, 0
+	BTFSS      STATUS+0, 2
+	GOTO       L__measure_distance33
+	MOVLW      0
+	XORWF      measure_distance_timeout_L0+0, 0
+L__measure_distance33:
+	BTFSS      STATUS+0, 2
+	GOTO       L_measure_distance12
+;AgriBot.c,113 :: 		T1CON = 0x00;  // Disable Timer1
+	CLRF       T1CON+0
+;AgriBot.c,114 :: 		return 0;  // Timeout prevention
+	CLRF       R0+0
+	CLRF       R0+1
+	GOTO       L_end_measure_distance
+;AgriBot.c,115 :: 		}
+L_measure_distance12:
+;AgriBot.c,116 :: 		}
+	GOTO       L_measure_distance10
+L_measure_distance11:
+;AgriBot.c,119 :: 		T1CON = 0x00;  // Disable Timer1
+	CLRF       T1CON+0
+;AgriBot.c,120 :: 		time = (TMR1H << 8) | TMR1L;  // Combine high and low bytes
+	MOVF       TMR1H+0, 0
+	MOVWF      R0+1
+	CLRF       R0+0
+	MOVF       TMR1L+0, 0
+	IORWF      R0+0, 1
+	MOVLW      0
+	IORWF      R0+1, 1
+;AgriBot.c,123 :: 		return time / 116u;
+	MOVLW      116
+	MOVWF      R4+0
+	CLRF       R4+1
+	CALL       _Div_16X16_U+0
+;AgriBot.c,124 :: 		}
+L_end_measure_distance:
+	RETURN
+; end of _measure_distance
+
+_setup:
+
+;AgriBot.c,127 :: 		void setup(){
+;AgriBot.c,136 :: 		TRISB = 0x02;
+	MOVLW      2
+	MOVWF      TRISB+0
+;AgriBot.c,137 :: 		TRISC = 0x40;
+	MOVLW      64
+	MOVWF      TRISC+0
+;AgriBot.c,138 :: 		TRISD = 0x00;
+	CLRF       TRISD+0
+;AgriBot.c,140 :: 		PORTB = 0x00;  // Initialize PORTB
+	CLRF       PORTB+0
+;AgriBot.c,141 :: 		PORTC = 0x00;  // Initialize PORTC
+	CLRF       PORTC+0
+;AgriBot.c,142 :: 		PORTD = 0x00;  // Initialize PORTD
+	CLRF       PORTD+0
+;AgriBot.c,148 :: 		our_delay_ms(100);
+	MOVLW      100
+	MOVWF      FARG_our_delay_ms_ms+0
+	MOVLW      0
+	MOVWF      FARG_our_delay_ms_ms+1
+	CALL       _our_delay_ms+0
+;AgriBot.c,149 :: 		}
+L_end_setup:
+	RETURN
+; end of _setup
+
+_main:
+
+;AgriBot.c,152 :: 		void main(void)
+;AgriBot.c,158 :: 		setup();
+	CALL       _setup+0
+;AgriBot.c,161 :: 		setupPWM();
+	CALL       _setupPWM+0
+;AgriBot.c,167 :: 		while (1) {
+L_main15:
+;AgriBot.c,168 :: 		distance = measure_distance();
+	CALL       _measure_distance+0
+;AgriBot.c,169 :: 		if (distance < 20u) {
+	MOVLW      0
+	SUBWF      R0+1, 0
+	BTFSS      STATUS+0, 2
+	GOTO       L__main36
+	MOVLW      20
+	SUBWF      R0+0, 0
+L__main36:
+	BTFSC      STATUS+0, 0
+	GOTO       L_main17
+;AgriBot.c,170 :: 		motors_stop();
+	CALL       _motors_stop+0
+;AgriBot.c,171 :: 		continue;        // skip to next reading
+	GOTO       L_main15
+;AgriBot.c,172 :: 		}
+L_main17:
+;AgriBot.c,173 :: 		motors_forward();
+	CALL       _motors_forward+0
+;AgriBot.c,174 :: 		Delay_ms(100);
+	MOVLW      2
+	MOVWF      R11+0
+	MOVLW      4
+	MOVWF      R12+0
+	MOVLW      186
+	MOVWF      R13+0
+L_main18:
+	DECFSZ     R13+0, 1
+	GOTO       L_main18
+	DECFSZ     R12+0, 1
+	GOTO       L_main18
+	DECFSZ     R11+0, 1
+	GOTO       L_main18
+	NOP
+;AgriBot.c,175 :: 		}
+	GOTO       L_main15
+;AgriBot.c,188 :: 		}
+L_end_main:
+	GOTO       $+0
+; end of _main

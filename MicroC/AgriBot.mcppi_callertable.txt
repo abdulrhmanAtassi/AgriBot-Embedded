@@ -1,0 +1,15 @@
+main
+	setup
+		our_delay_ms
+	setupPWM
+		setSpeedLeft
+		setSpeedRight
+	measure_distance
+		trigger_pulse
+		Div_16X16_U
+	motors_stop
+		setSpeedLeft
+		setSpeedRight
+	motors_forward
+		setSpeedLeft
+		setSpeedRight
