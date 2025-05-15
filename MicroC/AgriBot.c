@@ -8,10 +8,11 @@
 /* === Pin assignments ===================================================== */
 #define TRIG  PORTB.F0    // RB0 – trigger output
 #define ECHO  PORTB.F1    // RB1 – echo  input
-<<<<<<< Updated upstream
-=======
+
+
+
 char command;  // Declare this globally or at the top of main
->>>>>>> Stashed changes
+
 
 /* === Tiny helpers ======================================================== */
 void our_delay_ms(unsigned int ms) {
@@ -27,18 +28,10 @@ void our_delay_ms(unsigned int ms) {
 unsigned int servo_pulse_us = 1500; // 1500us = 90 degrees
 char pulse_started = 0;
 
-<<<<<<< Updated upstream
 
-
-void setSpeedLeft (unsigned char duty) { CCPR1L = duty; }   // 0-255
-void setSpeedRight(unsigned char duty) { CCPR2L = duty; }
-
-/* === PWM setup =========================================================== */
-void setupPWM(void)
-=======
 // === Timer1 Setup for 20ms ===
 void Timer1_Init()
->>>>>>> Stashed changes
+
 {
     T1CON = 0b00000001;   // Timer1 ON, Prescaler 1:1
     TMR1H = 0x0B;         // Preload for 20ms overflow at 20MHz
@@ -96,6 +89,8 @@ void interrupt()
         TMR2ON_bit = 0;
     }
 }
+
+
 
 
 /* === Ultrasonic sensor ====================================================*/
@@ -280,43 +275,7 @@ void bluetooth_init() {
 
 void main(void)
  {
-//     TRISD = 0x00;    // PORTD as output for IN1-IN4
-//     PORTD = 0x00;
-<<<<<<< Updated upstream
 
-unsigned int distance;  
-setup();
-
-
-    setupPWM();
-    //init_ultrasonic();
-//    TRISB = 0x00;
-//     PORTB = 0xff;
-     while (1)
-     {
-        while (1) {
-            distance = measure_distance();
-            if (distance < 20u) {
-                motors_stop();
-                continue;        // skip to next reading
-            }
-        motors_forward();
-        Delay_ms(100);
-    }
-     //    motors_left();
-     //    Delay_ms(400);
-     //    if (read_distance_cm() < 20) motors_stop();
-
-     //    motors_right();
-     //    Delay_ms(400);
-     //    if (read_distance_cm() < 20) motors_stop();
-
-     //    motors_backward();
-     //    Delay_ms(400);
-     //    if (read_distance_cm() < 20) motors_stop();
-     }
-=======
-   
     setup();    
     bluetooth_init();
     initCutter();
@@ -389,5 +348,5 @@ setup();
         Delay_ms(20);      // Total frame = 20ms
 
     }
->>>>>>> Stashed changes
+
 }

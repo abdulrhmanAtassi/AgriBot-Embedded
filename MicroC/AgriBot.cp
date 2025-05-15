@@ -1,13 +1,9 @@
-<<<<<<< Updated upstream
-#line 1 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/AgriBot.c"
-#line 13 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/AgriBot.c"
-=======
 #line 1 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/MicroC/AgriBot.c"
-#line 11 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/MicroC/AgriBot.c"
+#line 14 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/MicroC/AgriBot.c"
 char command;
 
 
->>>>>>> Stashed changes
+
 void our_delay_ms(unsigned int ms) {
  unsigned int i, j;
  for (i = 0; i < ms; i++) {
@@ -21,15 +17,10 @@ void our_delay_ms(unsigned int ms) {
 unsigned int servo_pulse_us = 1500;
 char pulse_started = 0;
 
-<<<<<<< Updated upstream
-void setSpeedLeft (unsigned char duty) { CCPR1L = duty; }
-void setSpeedRight(unsigned char duty) { CCPR2L = duty; }
 
-
-void setupPWM(void)
-=======
 
 void Timer1_Init()
+
 {
  T1CON = 0b00000001;
  TMR1H = 0x0B;
@@ -42,7 +33,6 @@ void Timer1_Init()
 
 
 void Timer2_Init()
->>>>>>> Stashed changes
 {
  T2CON = 0b00000111;
  PR2 = 249;
@@ -92,10 +82,12 @@ void interrupt()
 
 
 
+
+
 void trigger_pulse(){
-  PORTB.F2  = 1;
+  PORTB.F0  = 1;
  delay_us(10);
-  PORTB.F2  = 0;
+  PORTB.F0  = 0;
 }
 
 unsigned int measure_distance(){
@@ -174,7 +166,7 @@ void motors_stop(void)
  setSpeedLeft(0);
  setSpeedRight(0);
 }
-#line 193 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/MicroC/AgriBot.c"
+#line 201 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/MicroC/AgriBot.c"
 void motors_forward(unsigned char left_speed, unsigned char right_speed)
 {
  unsigned int distance ;
@@ -253,30 +245,6 @@ void bluetooth_init() {
 void main(void)
  {
 
-
-
-<<<<<<< Updated upstream
-unsigned int distance;
-setup();
-
-
- setupPWM();
-
-
-
- while (1)
- {
- while (1) {
- distance = measure_distance();
- if (distance < 20u) {
- motors_stop();
- continue;
- }
- motors_forward();
- Delay_ms(100);
- }
-#line 187 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/AgriBot.c"
-=======
  setup();
  bluetooth_init();
  initCutter();
@@ -290,12 +258,12 @@ setup();
 
  while (1)
  {
-#line 339 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/MicroC/AgriBot.c"
+#line 345 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/MicroC/AgriBot.c"
  PORTB.F3 = 1;
  Delay_us(15000);
  PORTB.F3 = 0;
  Delay_ms(20);
 
->>>>>>> Stashed changes
  }
+
 }

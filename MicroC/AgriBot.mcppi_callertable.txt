@@ -3,20 +3,6 @@ main
 		____DoICP
 	setup
 		our_delay_ms
-<<<<<<< Updated upstream
-	setupPWM
-		setSpeedLeft
-		setSpeedRight
-	measure_distance
-		trigger_pulse
-		Div_16X16_U
-	motors_stop
-		setSpeedLeft
-		setSpeedRight
-	motors_forward
-		setSpeedLeft
-		setSpeedRight
-=======
 	bluetooth_init
 		UART1_Init
 		our_delay_ms
@@ -31,4 +17,3 @@ main
 		Div_16x16_S
 			Div_16x16_S_L
 interrupt
->>>>>>> Stashed changes
