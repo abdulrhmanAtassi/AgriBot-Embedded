@@ -1,6 +1,9 @@
 main
+	__CC2DW
+		____DoICP
 	setup
 		our_delay_ms
+<<<<<<< Updated upstream
 	setupPWM
 		setSpeedLeft
 		setSpeedRight
@@ -13,3 +16,19 @@ main
 	motors_forward
 		setSpeedLeft
 		setSpeedRight
+=======
+	bluetooth_init
+		UART1_Init
+		our_delay_ms
+	initCutter
+	setupPWM
+		setSpeedLeft
+		setSpeedRight
+	Timer1_Init
+	Timer2_Init
+	Set_Servo_Angle
+		Mul_8X8_U
+		Div_16x16_S
+			Div_16x16_S_L
+interrupt
+>>>>>>> Stashed changes

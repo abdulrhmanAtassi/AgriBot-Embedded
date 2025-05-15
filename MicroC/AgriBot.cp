@@ -1,5 +1,13 @@
+<<<<<<< Updated upstream
 #line 1 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/AgriBot.c"
 #line 13 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/AgriBot.c"
+=======
+#line 1 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/MicroC/AgriBot.c"
+#line 11 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/MicroC/AgriBot.c"
+char command;
+
+
+>>>>>>> Stashed changes
 void our_delay_ms(unsigned int ms) {
  unsigned int i, j;
  for (i = 0; i < ms; i++) {
@@ -10,64 +18,77 @@ void our_delay_ms(unsigned int ms) {
 
 
 
+unsigned int servo_pulse_us = 1500;
+char pulse_started = 0;
 
+<<<<<<< Updated upstream
 void setSpeedLeft (unsigned char duty) { CCPR1L = duty; }
 void setSpeedRight(unsigned char duty) { CCPR2L = duty; }
 
 
 void setupPWM(void)
+=======
+
+void Timer1_Init()
 {
+ T1CON = 0b00000001;
+ TMR1H = 0x0B;
+ TMR1L = 0xDC;
+ TMR1IF_bit = 0;
+ TMR1IE_bit = 1;
+ PEIE_bit = 1;
+ GIE_bit = 1;
+}
 
- TRISC.F2 = 0;
- TRISC.F1 = 0;
 
-
- CCP1CON = 0b00001100;
- CCP2CON = 0b00001100;
-
-
+void Timer2_Init()
+>>>>>>> Stashed changes
+{
+ T2CON = 0b00000111;
  PR2 = 249;
- T2CON = 0b00000101;
-
- setSpeedLeft (128);
- setSpeedRight(128);
+ TMR2IF_bit = 0;
+ TMR2IE_bit = 1;
 }
 
 
-void motors_stop(void)
+void Set_Servo_Angle(unsigned char angle)
 {
- PORTD = 0x00;
- setSpeedLeft(0);
- setSpeedRight(0);
+
+ servo_pulse_us = ((angle * 10) / 9) + 1000;
 }
 
-void motors_forward(void)
+
+void interrupt()
 {
- PORTD = 0b01011010;
- setSpeedLeft(150);
- setSpeedRight(150);
+ unsigned int ticks;
+
+
+ if (TMR1IF_bit)
+ {
+ TMR1IF_bit = 0;
+ TMR1H = 0x0B;
+ TMR1L = 0xDC;
+
+ pulse_started = 1;
+ PORTB.F3 = 1;
+
+
+ ticks = servo_pulse_us / 4;
+ PR2 = ticks;
+ TMR2 = 0;
+ TMR2ON_bit = 1;
+ }
+
+
+ if (TMR2IF_bit && pulse_started)
+ {
+ TMR2IF_bit = 0;
+ PORTB.F3 = 0;
+ pulse_started = 0;
+ TMR2ON_bit = 0;
+ }
 }
 
-void motors_backward(void)
-{
- PORTD = 0b10100101;
- setSpeedLeft(150);
- setSpeedRight(150);
-}
-
-void motors_left(void)
-{
- PORTD = 0b01010101;
- setSpeedLeft(150);
- setSpeedRight(150);
-}
-
-void motors_right(void)
-{
- PORTD = 0b10101010;
- setSpeedLeft(150);
- setSpeedRight(150);
-}
 
 
 
@@ -114,7 +135,91 @@ unsigned int measure_distance(){
 }
 
 
+
+void initCutter(void) {
+ TRISB.F4 = 0;
+ PORTB.F4 = 0;
+}
+
+void cutter_on(void) { PORTB.F4 = 1; }
+void cutter_off(void) { PORTB.F4 = 0; }
+
+
+void setSpeedLeft (unsigned char duty) { CCPR1L = duty; }
+void setSpeedRight(unsigned char duty) { CCPR2L = duty; }
+
+
+void setupPWM(void)
+{
+
+ TRISC.F2 = 0;
+ TRISC.F1 = 0;
+
+
+ CCP1CON = 0b00001100;
+ CCP2CON = 0b00001100;
+
+
+ PR2 = 249;
+ T2CON = 0b00000101;
+
+ setSpeedLeft (128);
+ setSpeedRight(128);
+}
+
+
+void motors_stop(void)
+{
+ PORTD = 0x00;
+ setSpeedLeft(0);
+ setSpeedRight(0);
+}
+#line 193 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/MicroC/AgriBot.c"
+void motors_forward(unsigned char left_speed, unsigned char right_speed)
+{
+ unsigned int distance ;
+ while (1) {
+ if (UART1_Data_Ready()) {
+ command = UART1_Read();
+ break;
+ }
+ distance = measure_distance();
+ if (distance < 20u) {
+ motors_stop();
+ } else {
+ PORTD = 0b01011010;
+ setSpeedLeft(left_speed);
+ setSpeedRight(right_speed);
+ }
+ }
+}
+
+void motors_backward(unsigned char left_speed, unsigned char right_speed)
+{
+ PORTD = 0b10100101;
+ setSpeedLeft(left_speed);
+ setSpeedRight(right_speed);
+}
+
+void motors_left(void)
+{
+ PORTD = 0b01010101;
+ setSpeedLeft(150);
+ setSpeedRight(150);
+}
+
+void motors_right(void)
+{
+ PORTD = 0b10101010;
+ setSpeedLeft(150);
+ setSpeedRight(150);
+}
+
+
+
 void setup(){
+
+
 
 
 
@@ -138,12 +243,19 @@ void setup(){
  our_delay_ms(100);
 }
 
+void bluetooth_init() {
+ UART1_Init(9600);
+ our_delay_ms(100);
+}
+
+
 
 void main(void)
  {
 
 
 
+<<<<<<< Updated upstream
 unsigned int distance;
 setup();
 
@@ -164,5 +276,26 @@ setup();
  Delay_ms(100);
  }
 #line 187 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/AgriBot.c"
+=======
+ setup();
+ bluetooth_init();
+ initCutter();
+ setupPWM();
+
+ Timer1_Init();
+ Timer2_Init();
+ Set_Servo_Angle(90);
+ TRISB.F3 = 0;
+ PORTB.F3 = 0;
+
+ while (1)
+ {
+#line 339 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/MicroC/AgriBot.c"
+ PORTB.F3 = 1;
+ Delay_us(15000);
+ PORTB.F3 = 0;
+ Delay_ms(20);
+
+>>>>>>> Stashed changes
  }
 }

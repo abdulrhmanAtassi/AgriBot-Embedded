@@ -46,7 +46,8 @@ File1=C_String
 File2=Conversions
 File3=C_Stdlib
 File4=C_Type
-Count=5
+File5=UART
+Count=6
 [EXPANDED_NODES]
 Count=0
 [LIB_EXPANDED_NODES]

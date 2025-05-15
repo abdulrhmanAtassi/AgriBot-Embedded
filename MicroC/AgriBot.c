@@ -8,6 +8,10 @@
 /* === Pin assignments ===================================================== */
 #define TRIG  PORTB.F0    // RB0 – trigger output
 #define ECHO  PORTB.F1    // RB1 – echo  input
+<<<<<<< Updated upstream
+=======
+char command;  // Declare this globally or at the top of main
+>>>>>>> Stashed changes
 
 /* === Tiny helpers ======================================================== */
 void our_delay_ms(unsigned int ms) {
@@ -17,8 +21,13 @@ void our_delay_ms(unsigned int ms) {
     }
 }
 
+/* ===Set Servo Functions ====================================================*/
 
+// === Global Variables ===
+unsigned int servo_pulse_us = 1500; // 1500us = 90 degrees
+char pulse_started = 0;
 
+<<<<<<< Updated upstream
 
 
 void setSpeedLeft (unsigned char duty) { CCPR1L = duty; }   // 0-255
@@ -26,58 +35,68 @@ void setSpeedRight(unsigned char duty) { CCPR2L = duty; }
 
 /* === PWM setup =========================================================== */
 void setupPWM(void)
+=======
+// === Timer1 Setup for 20ms ===
+void Timer1_Init()
+>>>>>>> Stashed changes
 {
-    /* RC2 = CCP1, RC1 = CCP2  → outputs */
-    TRISC.F2 = 0;   // RC2
-    TRISC.F1 = 0;   // RC1
-    
-    /* CCP modules in PWM mode */
-    CCP1CON = 0b00001100;     // CCP1 PWM
-    CCP2CON = 0b00001100;     // CCP2 PWM
-    
-    /* Timer2 drives both PWMs  –  about 5 kHz  */
-    PR2   = 249;              // period
-    T2CON = 0b00000101;       // prescaler 4, TMR2 on
-    
-    setSpeedLeft (128);       // 50 %
-    setSpeedRight(128);       // 50 %
+    T1CON = 0b00000001;   // Timer1 ON, Prescaler 1:1
+    TMR1H = 0x0B;         // Preload for 20ms overflow at 20MHz
+    TMR1L = 0xDC;
+    TMR1IF_bit = 0;
+    TMR1IE_bit = 1;       // Enable Timer1 interrupt
+    PEIE_bit = 1;         // Enable peripheral interrupts
+    GIE_bit = 1;          // Enable global interrupts
 }
 
-/* === Motor direction helpers (PORTD pattern) ============================= */
-void motors_stop(void)
+// === Timer2 Setup for pulse width ===
+void Timer2_Init()
 {
-    PORTD = 0x00;
-    setSpeedLeft(0);
-    setSpeedRight(0);
+    T2CON = 0b00000111;   // Prescaler 1:16, Timer2 ON when needed
+    PR2 = 249;            // Will be set dynamically
+    TMR2IF_bit = 0;
+    TMR2IE_bit = 1;       // Enable Timer2 interrupt
 }
 
-void motors_forward(void)
+// === Set Servo Angle Function ===
+void Set_Servo_Angle(unsigned char angle)
 {
-    PORTD = 0b01011010;            // forward
-    setSpeedLeft(150);
-    setSpeedRight(150);
+    // 1000us (0°) to 2000us (180°)
+    servo_pulse_us = ((angle * 10) / 9) + 1000;
 }
 
-void motors_backward(void)
+// === Interrupt Service Routine ===
+void interrupt()
 {
-    PORTD = 0b10100101;            // backward
-    setSpeedLeft(150);
-    setSpeedRight(150);
+    unsigned int ticks;
+
+    // Timer1: Start of 20ms frame
+    if (TMR1IF_bit)
+    {
+        TMR1IF_bit = 0;
+        TMR1H = 0x0B;
+        TMR1L = 0xDC;
+
+        pulse_started = 1;
+        PORTB.F3 = 1;  // ✅ Servo pulse HIGH on RB3
+
+        // Configure Timer2 for pulse duration (1-2 ms)
+        ticks = servo_pulse_us / 4; // 1 tick = 4us (20MHz, prescaler 16)
+        PR2 = ticks;
+        TMR2 = 0;
+        TMR2ON_bit = 1;
+    }
+
+    // Timer2: End of pulse
+    if (TMR2IF_bit && pulse_started)
+    {
+        TMR2IF_bit = 0;
+        PORTB.F3 = 0;  // ✅ Servo pulse LOW
+        pulse_started = 0;
+        TMR2ON_bit = 0;
+    }
 }
 
-void motors_left(void)
-{
-    PORTD = 0b01010101;            // turn left
-    setSpeedLeft(150);
-    setSpeedRight(150);
-}
-
-void motors_right(void)
-{
-    PORTD = 0b10101010;            // turn right
-    setSpeedLeft(150);
-    setSpeedRight(150);
-}
 
 /* === Ultrasonic sensor ====================================================*/
 
@@ -123,8 +142,112 @@ unsigned int measure_distance(){
    return time / 116u;
 }
 
+/* === Cutter setup =========================================================== */
+
+void initCutter(void) {
+     TRISB.F4 = 0;
+     PORTB.F4    = 0;
+}
+
+void cutter_on(void)  { PORTB.F4 = 1; }
+void cutter_off(void) { PORTB.F4 = 0; }
+
+
+void setSpeedLeft (unsigned char duty) { CCPR1L = duty; }   // 0-255
+void setSpeedRight(unsigned char duty) { CCPR2L = duty; }
+
+/* === PWM setup =========================================================== */
+void setupPWM(void)
+{
+    /* RC2 = CCP1, RC1 = CCP2  → outputs */
+    TRISC.F2 = 0;   // RC2
+    TRISC.F1 = 0;   // RC1
+    
+    /* CCP modules in PWM mode */
+    CCP1CON = 0b00001100;     // CCP1 PWM
+    CCP2CON = 0b00001100;     // CCP2 PWM
+    
+    /* Timer2 drives both PWMs  –  about 5 kHz  */
+    PR2   = 249;              // period
+    T2CON = 0b00000101;       // prescaler 4, TMR2 on
+    
+    setSpeedLeft (128);       // 50 %
+    setSpeedRight(128);       // 50 %
+}
+
+/* === Motor direction helpers (PORTD pattern) ============================= */
+void motors_stop(void)
+{
+    PORTD = 0x00;
+    setSpeedLeft(0);
+    setSpeedRight(0);
+}
+
+// void motors_forward_continuous(void)
+// {
+//     unsigned int distance ;
+//     while (1) {
+//         if (UART1_Data_Ready()) {
+//             command = UART1_Read();
+//             break;  // break out to handle new command
+//         }
+//         distance = measure_distance();
+//         if (distance < 20u) {
+//             motors_stop();
+//         } else {
+//             PORTD = 0b01011010;  // forward
+//             setSpeedLeft(150);
+//             setSpeedRight(150);
+//         }
+//     }
+// }
+
+
+void motors_forward(unsigned char left_speed, unsigned char right_speed)
+{
+    unsigned int distance ;
+    while (1) {
+        if (UART1_Data_Ready()) {
+            command = UART1_Read();
+            break;  // break out to handle new command
+        }
+        distance = measure_distance();
+        if (distance < 20u) {
+            motors_stop();
+        } else {
+            PORTD = 0b01011010;  // forward
+            setSpeedLeft(left_speed);
+            setSpeedRight(right_speed);
+        }
+    }
+}
+
+void motors_backward(unsigned char left_speed, unsigned char right_speed)
+{
+    PORTD = 0b10100101;  // Backward direction
+    setSpeedLeft(left_speed);
+    setSpeedRight(right_speed);
+}
+
+void motors_left(void)
+{
+    PORTD = 0b01010101;            // turn left
+    setSpeedLeft(150);
+    setSpeedRight(150);
+}
+
+void motors_right(void)
+{
+    PORTD = 0b10101010;            // turn right
+    setSpeedLeft(150);
+    setSpeedRight(150);
+}
+
+
 /* === setup ================================================================ */
 void setup(){
+
+
     /// MY CODE
     //  TRISC = 0xFF;
     //  TRISB = 0x02;
@@ -148,11 +271,18 @@ void setup(){
     our_delay_ms(100);
 }
 
+void bluetooth_init() {
+    UART1_Init(9600);
+     our_delay_ms(100);   // Initialize UART with 9600 baud rate
+}
+
 /* === Main ================================================================ */
+
 void main(void)
  {
 //     TRISD = 0x00;    // PORTD as output for IN1-IN4
 //     PORTD = 0x00;
+<<<<<<< Updated upstream
 
 unsigned int distance;  
 setup();
@@ -185,4 +315,79 @@ setup();
      //    Delay_ms(400);
      //    if (read_distance_cm() < 20) motors_stop();
      }
+=======
+   
+    setup();    
+    bluetooth_init();
+    initCutter();
+    setupPWM();
+    
+    Timer1_Init();         // Start 20ms frame timer
+    Timer2_Init();         // Prepare Timer2 for pulse width
+    Set_Servo_Angle(90);   // Initial angle (e.g., 90°)
+    TRISB.F3 = 0;
+    PORTB.F3 = 0;
+
+     while (1)
+     {
+        // if (UART1_Data_Ready()) {          // Check if data is available
+        //     command = UART1_Read();        // Read one character
+        //     switch(command){
+        //         case 'F':
+        //             motors_forward(150, 150);
+        //             break;
+
+        //         case 'B': 
+        //             motors_backward(100, 100);
+        //             break;
+
+        //         case 'R': 
+        //             motors_left();
+        //             break;
+
+        //         case 'L': 
+        //             motors_right();
+        //             break;
+
+        //         case 'S': 
+        //             motors_stop();
+        //             break;
+
+        //         case 'G':   // Forward left
+        //             motors_forward(100, 150);   
+        //             break;
+
+        //         case 'H':   // Forward right
+        //             motors_forward(150, 100);
+        //             break;
+
+        //         case 'I':   // Backward left
+        //             motors_backward(100, 150);
+        //             break;
+
+        //         case 'J':   // Backward right
+        //             motors_backward(150, 100);
+        //             break;
+
+        //         case 'X':   // Turn headlight ON
+        //             cutter_on();
+        //             break;
+
+        //         case 'x':   // Turn headlight OFF
+        //             cutter_off();
+        //             break;
+        //         case 'Y':
+        //             Set_Servo_Angle(180);
+        //             break;
+                    
+        //     }
+        // }
+
+        PORTB.F3 = 1;
+        Delay_us(15000);    // 90° position
+        PORTB.F3 = 0;
+        Delay_ms(20);      // Total frame = 20ms
+
+    }
+>>>>>>> Stashed changes
 }

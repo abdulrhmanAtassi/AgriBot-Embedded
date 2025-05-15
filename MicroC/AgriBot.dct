@@ -63,6 +63,7 @@ bclif
 bclif_bit
 bf
 bf_bit
+bluetooth_init
 boot16_delay_5ms
 brgh
 brgh_bit
@@ -145,6 +146,7 @@ cmie_bit
 cmif
 cmif_bit
 comfrem
+command
 compare_double
 cos
 cosh
@@ -258,6 +260,7 @@ inte
 inte_bit
 intedg
 intedg_bit
+interrupt
 intf
 intf_bit
 inttohex
@@ -392,6 +395,7 @@ pspif_bit
 pspmode
 pspmode_bit
 pspmode_trise_bit
+pulse_started
 r
 r_bit
 r_not_w
@@ -520,6 +524,8 @@ s_bit
 sdiv3232l
 sen
 sen_bit
+servo_pulse_us
+set_servo_angle
 setfdz32
 setfov32
 setfun32
@@ -608,6 +614,8 @@ t2ckps1_bit
 t2con
 tan
 tanh
+timer1_init
+timer2_init
 tmr0
 tmr0ie
 tmr0ie_bit
@@ -732,6 +740,13 @@ txreg
 txsta
 ua
 ua_bit
+uart1_data_ready
+uart1_init
+uart1_read
+uart1_read_text
+uart1_tx_idle
+uart1_write
+uart1_write_text
 uldiv
 vdelay_advanced_ms
 vdelay_ms
