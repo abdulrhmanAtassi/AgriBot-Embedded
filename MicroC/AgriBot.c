@@ -22,77 +22,6 @@ void our_delay_ms(unsigned int ms) {
     }
 }
 
-/* ===Set Servo Functions ====================================================*/
-
-// === Global Variables ===
-unsigned int servo_pulse_us = 1500; // 1500us = 90 degrees
-char pulse_started = 0;
-
-
-// === Timer1 Setup for 20ms ===
-void Timer1_Init()
-
-{
-    T1CON = 0b00000001;   // Timer1 ON, Prescaler 1:1
-    TMR1H = 0x0B;         // Preload for 20ms overflow at 20MHz
-    TMR1L = 0xDC;
-    TMR1IF_bit = 0;
-    TMR1IE_bit = 1;       // Enable Timer1 interrupt
-    PEIE_bit = 1;         // Enable peripheral interrupts
-    GIE_bit = 1;          // Enable global interrupts
-}
-
-// === Timer2 Setup for pulse width ===
-void Timer2_Init()
-{
-    T2CON = 0b00000111;   // Prescaler 1:16, Timer2 ON when needed
-    PR2 = 249;            // Will be set dynamically
-    TMR2IF_bit = 0;
-    TMR2IE_bit = 1;       // Enable Timer2 interrupt
-}
-
-// === Set Servo Angle Function ===
-void Set_Servo_Angle(unsigned char angle)
-{
-    // 1000us (0°) to 2000us (180°)
-    servo_pulse_us = ((angle * 10) / 9) + 1000;
-}
-
-// === Interrupt Service Routine ===
-void interrupt()
-{
-    unsigned int ticks;
-
-    // Timer1: Start of 20ms frame
-    if (TMR1IF_bit)
-    {
-        TMR1IF_bit = 0;
-        TMR1H = 0x0B;
-        TMR1L = 0xDC;
-
-        pulse_started = 1;
-        PORTB.F3 = 1;  // ✅ Servo pulse HIGH on RB3
-
-        // Configure Timer2 for pulse duration (1-2 ms)
-        ticks = servo_pulse_us / 4; // 1 tick = 4us (20MHz, prescaler 16)
-        PR2 = ticks;
-        TMR2 = 0;
-        TMR2ON_bit = 1;
-    }
-
-    // Timer2: End of pulse
-    if (TMR2IF_bit && pulse_started)
-    {
-        TMR2IF_bit = 0;
-        PORTB.F3 = 0;  // ✅ Servo pulse LOW
-        pulse_started = 0;
-        TMR2ON_bit = 0;
-    }
-}
-
-
-
-
 /* === Ultrasonic sensor ====================================================*/
 
 void trigger_pulse(){
@@ -148,9 +77,6 @@ void cutter_on(void)  { PORTB.F4 = 1; }
 void cutter_off(void) { PORTB.F4 = 0; }
 
 
-void setSpeedLeft (unsigned char duty) { CCPR1L = duty; }   // 0-255
-void setSpeedRight(unsigned char duty) { CCPR2L = duty; }
-
 /* === PWM setup =========================================================== */
 void setupPWM(void)
 {
@@ -170,6 +96,9 @@ void setupPWM(void)
     setSpeedRight(128);       // 50 %
 }
 
+void setSpeedLeft (unsigned char duty) { CCPR1L = duty; }   // 0-255
+void setSpeedRight(unsigned char duty) { CCPR2L = duty; }
+
 /* === Motor direction helpers (PORTD pattern) ============================= */
 void motors_stop(void)
 {
@@ -177,26 +106,6 @@ void motors_stop(void)
     setSpeedLeft(0);
     setSpeedRight(0);
 }
-
-// void motors_forward_continuous(void)
-// {
-//     unsigned int distance ;
-//     while (1) {
-//         if (UART1_Data_Ready()) {
-//             command = UART1_Read();
-//             break;  // break out to handle new command
-//         }
-//         distance = measure_distance();
-//         if (distance < 20u) {
-//             motors_stop();
-//         } else {
-//             PORTD = 0b01011010;  // forward
-//             setSpeedLeft(150);
-//             setSpeedRight(150);
-//         }
-//     }
-// }
-
 
 void motors_forward(unsigned char left_speed, unsigned char right_speed)
 {
@@ -241,29 +150,22 @@ void motors_right(void)
 
 /* === setup ================================================================ */
 void setup(){
-
-
-    /// MY CODE
-    //  TRISC = 0xFF;
-    //  TRISB = 0x02;
-    //  PORTC = 0x00;
-    //  PORTB = 0x00;
-    //  our_delay_ms(100);
-
-    // TRISA = 0xFF;
     TRISB = 0x02;
     TRISC = 0x40;
     TRISD = 0x00;
-    // PORTA = 0x00;  // Initialize PORTB
     PORTB = 0x00;  // Initialize PORTB
     PORTC = 0x00;  // Initialize PORTC
     PORTD = 0x00;  // Initialize PORTD
+    our_delay_ms(100);
+
+
+    // TRISA = 0xFF;
+    // PORTA = 0x00;  // Initialize PORTB
     // ADCON0 = 0x00; // MAKE IT 0x01 before using A/D
     // ADCON1 = 0x00; // Configure ADC module
     // Configure USART
     // PIR1 = 0x00;   // Set all interrupt flags to zero
     // INTCON = 0x00;
-    our_delay_ms(100);
 }
 
 void bluetooth_init() {
@@ -350,3 +252,23 @@ void main(void)
     }
 
 }
+
+
+// void motors_forward_continuous(void)
+// {
+//     unsigned int distance ;
+//     while (1) {
+//         if (UART1_Data_Ready()) {
+//             command = UART1_Read();
+//             break;  // break out to handle new command
+//         }
+//         distance = measure_distance();
+//         if (distance < 20u) {
+//             motors_stop();
+//         } else {
+//             PORTD = 0b01011010;  // forward
+//             setSpeedLeft(150);
+//             setSpeedRight(150);
+//         }
+//     }
+// }
