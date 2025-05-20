@@ -63,6 +63,7 @@ bclif
 bclif_bit
 bf
 bf_bit
+bluetooth_init
 boot16_delay_5ms
 brgh
 brgh_bit
@@ -145,6 +146,7 @@ cmie_bit
 cmif
 cmif_bit
 comfrem
+command
 compare_double
 cos
 cosh
@@ -735,6 +737,13 @@ txreg
 txsta
 ua
 ua_bit
+uart1_data_ready
+uart1_init
+uart1_read
+uart1_read_text
+uart1_tx_idle
+uart1_write
+uart1_write_text
 uldiv
 vdelay_advanced_ms
 vdelay_ms

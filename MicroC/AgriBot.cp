@@ -1,81 +1,14 @@
 #line 1 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/MicroC/AgriBot.c"
 #line 14 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/MicroC/AgriBot.c"
+char command;
+
+
+
 void our_delay_ms(unsigned int ms) {
  unsigned int i, j;
  for (i = 0; i < ms; i++) {
  for (j = 0; j < 111; j++) NOP();
  }
-}
-
-
-
-
-
-void initCutter(void) {
- TRISB.F4 = 0;
- PORTB.F4 = 0;
-}
-
-void cutter_on(void) { PORTB.F4 = 1; }
-void cutter_off(void) { PORTB.F4 = 0; }
-
-
-void setSpeedLeft (unsigned char duty) { CCPR1L = duty; }
-void setSpeedRight(unsigned char duty) { CCPR2L = duty; }
-
-
-void setupPWM(void)
-{
-
- TRISC.F2 = 0;
- TRISC.F1 = 0;
-
-
- CCP1CON = 0b00001100;
- CCP2CON = 0b00001100;
-
-
- PR2 = 249;
- T2CON = 0b00000101;
-
- setSpeedLeft (128);
- setSpeedRight(128);
-}
-
-
-void motors_stop(void)
-{
- PORTD = 0x00;
- setSpeedLeft(0);
- setSpeedRight(0);
-}
-
-void motors_forward(void)
-{
- PORTD = 0b01011010;
- setSpeedLeft(150);
- setSpeedRight(150);
-}
-
-void motors_backward(void)
-{
- PORTD = 0b10100101;
- setSpeedLeft(150);
- setSpeedRight(150);
-}
-
-void motors_left(void)
-{
- PORTD = 0b01010101;
- setSpeedLeft(150);
- setSpeedRight(150);
-}
-
-void motors_right(void)
-{
- PORTD = 0b10101010;
- setSpeedLeft(150);
- setSpeedRight(150);
 }
 
 
@@ -123,39 +56,137 @@ unsigned int measure_distance(){
 }
 
 
+
+void initCutter(void) {
+ TRISB.F4 = 0;
+ PORTB.F4 = 0;
+}
+
+void cutter_on(void) { PORTB.F4 = 1; }
+void cutter_off(void) { PORTB.F4 = 0; }
+
+
+
+void setSpeedLeft (unsigned char duty) { CCPR1L = duty; }
+void setSpeedRight(unsigned char duty) { CCPR2L = duty; }
+
+void setupPWM(void)
+{
+
+ TRISC.F2 = 0;
+ TRISC.F1 = 0;
+
+
+ CCP1CON = 0b00001100;
+ CCP2CON = 0b00001100;
+
+
+ PR2 = 249;
+ T2CON = 0b00000101;
+
+ setSpeedLeft (128);
+ setSpeedRight(128);
+}
+
+
+
+void motors_stop(void)
+{
+ PORTD = 0x00;
+ setSpeedLeft(0);
+ setSpeedRight(0);
+}
+
+void motors_forward(unsigned char left_speed, unsigned char right_speed)
+{
+ unsigned int distance ;
+ while (1) {
+ if (UART1_Data_Ready()) {
+ command = UART1_Read();
+ break;
+ }
+ distance = measure_distance();
+ if (distance < 20u) {
+ motors_stop();
+ } else {
+ PORTD = 0b01011010;
+ setSpeedLeft(left_speed);
+ setSpeedRight(right_speed);
+ }
+ }
+}
+
+void motors_backward(unsigned char left_speed, unsigned char right_speed)
+{
+ PORTD = 0b10100101;
+ setSpeedLeft(left_speed);
+ setSpeedRight(right_speed);
+}
+
+void motors_left(void)
+{
+ PORTD = 0b01010101;
+ setSpeedLeft(150);
+ setSpeedRight(150);
+}
+
+void motors_right(void)
+{
+ PORTD = 0b10101010;
+ setSpeedLeft(150);
+ setSpeedRight(150);
+}
+
+
+
 void setup(){
-
-
-
-
-
-
-
-
  TRISB = 0x02;
  TRISC = 0x40;
  TRISD = 0x00;
-
  PORTB = 0x00;
  PORTC = 0x00;
  PORTD = 0x00;
+ our_delay_ms(100);
 
 
 
 
 
+
+
+
+
+}
+
+void bluetooth_init() {
+ UART1_Init(9600);
  our_delay_ms(100);
 }
+
 
 
 void main(void)
  {
 
-
-
-unsigned int distance;
  setup();
+ bluetooth_init();
  initCutter();
- cutter_on();
-#line 196 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/MicroC/AgriBot.c"
+ setupPWM();
+
+
+
+
+ TRISB.F3 = 0;
+ PORTB.F3 = 0;
+
+ while (1)
+ {
+#line 248 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/MicroC/AgriBot.c"
+ PORTB.F3 = 1;
+ Delay_us(15000);
+ PORTB.F3 = 0;
+ Delay_ms(20);
+
+ }
+
 }
