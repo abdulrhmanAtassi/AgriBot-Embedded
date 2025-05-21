@@ -1,4 +1,5 @@
 
+<<<<<<< Updated upstream
 _our_delay_ms:
 
 ;AgriBot.c,18 :: 		void our_delay_ms(unsigned int ms) {
@@ -540,12 +541,27 @@ _setup:
 	MOVWF      FARG_our_delay_ms_ms+1
 	CALL       _our_delay_ms+0
 ;AgriBot.c,267 :: 		}
+=======
+_setup:
+
+;AgriBot.c,423 :: 		void setup(void)
+;AgriBot.c,426 :: 		TRISB  = 0x00;      // all PORTB as output for demo
+	CLRF       TRISB+0
+;AgriBot.c,427 :: 		PORTB  = 0x00;
+	CLRF       PORTB+0
+;AgriBot.c,430 :: 		TRISB.F3 = 0;       // output
+	BCF        TRISB+0, 3
+;AgriBot.c,431 :: 		PORTB.F3 = 0;       // low
+	BCF        PORTB+0, 3
+;AgriBot.c,432 :: 		}
+>>>>>>> Stashed changes
 L_end_setup:
 	RETURN
 ; end of _setup
 
-_bluetooth_init:
+_Timer1_Init:
 
+<<<<<<< Updated upstream
 ;AgriBot.c,269 :: 		void bluetooth_init() {
 ;AgriBot.c,270 :: 		UART1_Init(9600);
 	MOVLW      51
@@ -560,11 +576,155 @@ _bluetooth_init:
 	CALL       _our_delay_ms+0
 ;AgriBot.c,272 :: 		}
 L_end_bluetooth_init:
+=======
+;AgriBot.c,435 :: 		void Timer1_Init(void)
+;AgriBot.c,440 :: 		T1CON      = 0b00000001;   // prescaler 1:1, Timer-1 ON
+	MOVLW      1
+	MOVWF      T1CON+0
+;AgriBot.c,441 :: 		TMR1H      = 0x63;
+	MOVLW      99
+	MOVWF      TMR1H+0
+;AgriBot.c,442 :: 		TMR1L      = 0xC0;
+	MOVLW      192
+	MOVWF      TMR1L+0
+;AgriBot.c,443 :: 		TMR1IF_bit = 0;
+	BCF        TMR1IF_bit+0, BitPos(TMR1IF_bit+0)
+;AgriBot.c,444 :: 		TMR1IE_bit = 1;            // enable Timer-1 interrupt
+	BSF        TMR1IE_bit+0, BitPos(TMR1IE_bit+0)
+;AgriBot.c,445 :: 		}
+L_end_Timer1_Init:
+>>>>>>> Stashed changes
 	RETURN
-; end of _bluetooth_init
+; end of _Timer1_Init
+
+_Timer2_Init:
+
+;AgriBot.c,448 :: 		void Timer2_Init(void)
+;AgriBot.c,451 :: 		T2CON      = 0b00000100;   // prescaler 1:16, Timer-2 OFF
+	MOVLW      4
+	MOVWF      T2CON+0
+;AgriBot.c,452 :: 		PR2        = 250;          // dummy, overwritten each frame
+	MOVLW      250
+	MOVWF      PR2+0
+;AgriBot.c,453 :: 		TMR2IF_bit = 0;
+	BCF        TMR2IF_bit+0, BitPos(TMR2IF_bit+0)
+;AgriBot.c,454 :: 		TMR2IE_bit = 1;            // enable Timer-2 interrupt
+	BSF        TMR2IE_bit+0, BitPos(TMR2IE_bit+0)
+;AgriBot.c,455 :: 		}
+L_end_Timer2_Init:
+	RETURN
+; end of _Timer2_Init
+
+_Set_Servo_Angle:
+
+;AgriBot.c,458 :: 		void Set_Servo_Angle(unsigned char angle)
+;AgriBot.c,461 :: 		servo_pulse_us = ((unsigned int)angle * 1000u) / 180u + 1000u;
+	MOVF       FARG_Set_Servo_Angle_angle+0, 0
+	MOVWF      R0+0
+	CLRF       R0+1
+	MOVLW      232
+	MOVWF      R4+0
+	MOVLW      3
+	MOVWF      R4+1
+	CALL       _Mul_16X16_U+0
+	MOVLW      180
+	MOVWF      R4+0
+	CLRF       R4+1
+	CALL       _Div_16X16_U+0
+	MOVLW      232
+	ADDWF      R0+0, 0
+	MOVWF      _servo_pulse_us+0
+	MOVF       R0+1, 0
+	BTFSC      STATUS+0, 0
+	ADDLW      1
+	ADDLW      3
+	MOVWF      _servo_pulse_us+1
+;AgriBot.c,462 :: 		}
+L_end_Set_Servo_Angle:
+	RETURN
+; end of _Set_Servo_Angle
+
+_interrupt:
+	MOVWF      R15+0
+	SWAPF      STATUS+0, 0
+	CLRF       STATUS+0
+	MOVWF      ___saveSTATUS+0
+	MOVF       PCLATH+0, 0
+	MOVWF      ___savePCLATH+0
+	CLRF       PCLATH+0
+
+;AgriBot.c,465 :: 		void interrupt(void)
+;AgriBot.c,468 :: 		if (TMR1IF_bit)
+	BTFSS      TMR1IF_bit+0, BitPos(TMR1IF_bit+0)
+	GOTO       L_interrupt0
+;AgriBot.c,472 :: 		TMR1IF_bit = 0;
+	BCF        TMR1IF_bit+0, BitPos(TMR1IF_bit+0)
+;AgriBot.c,473 :: 		TMR1H = 0x63;          // reload 20 ms
+	MOVLW      99
+	MOVWF      TMR1H+0
+;AgriBot.c,474 :: 		TMR1L = 0xC0;
+	MOVLW      192
+	MOVWF      TMR1L+0
+;AgriBot.c,476 :: 		pulse_started = 1;
+	MOVLW      1
+	MOVWF      _pulse_started+0
+;AgriBot.c,477 :: 		PORTB.F3 = 1;          // raise servo pulse
+	BSF        PORTB+0, 3
+;AgriBot.c,480 :: 		ticks = servo_pulse_us / 8u;   // 125-250 (=1-2 ms)
+	MOVF       _servo_pulse_us+0, 0
+	MOVWF      R0+0
+	MOVF       _servo_pulse_us+1, 0
+	MOVWF      R0+1
+	RRF        R0+1, 1
+	RRF        R0+0, 1
+	BCF        R0+1, 7
+	RRF        R0+1, 1
+	RRF        R0+0, 1
+	BCF        R0+1, 7
+	RRF        R0+1, 1
+	RRF        R0+0, 1
+	BCF        R0+1, 7
+;AgriBot.c,481 :: 		PR2   = (unsigned char)ticks;
+	MOVF       R0+0, 0
+	MOVWF      PR2+0
+;AgriBot.c,482 :: 		TMR2  = 0;
+	CLRF       TMR2+0
+;AgriBot.c,483 :: 		TMR2ON_bit = 1;        // start Timer-2
+	BSF        TMR2ON_bit+0, BitPos(TMR2ON_bit+0)
+;AgriBot.c,484 :: 		}
+L_interrupt0:
+;AgriBot.c,487 :: 		if (TMR2IF_bit && pulse_started)
+	BTFSS      TMR2IF_bit+0, BitPos(TMR2IF_bit+0)
+	GOTO       L_interrupt3
+	MOVF       _pulse_started+0, 0
+	BTFSC      STATUS+0, 2
+	GOTO       L_interrupt3
+L__interrupt9:
+;AgriBot.c,489 :: 		TMR2IF_bit = 0;
+	BCF        TMR2IF_bit+0, BitPos(TMR2IF_bit+0)
+;AgriBot.c,490 :: 		TMR2ON_bit = 0;
+	BCF        TMR2ON_bit+0, BitPos(TMR2ON_bit+0)
+;AgriBot.c,491 :: 		PORTB.F3   = 0;        // lower servo pulse
+	BCF        PORTB+0, 3
+;AgriBot.c,492 :: 		pulse_started = 0;
+	CLRF       _pulse_started+0
+;AgriBot.c,493 :: 		}
+L_interrupt3:
+;AgriBot.c,494 :: 		}
+L_end_interrupt:
+L__interrupt15:
+	MOVF       ___savePCLATH+0, 0
+	MOVWF      PCLATH+0
+	SWAPF      ___saveSTATUS+0, 0
+	MOVWF      STATUS+0
+	SWAPF      R15+0, 1
+	SWAPF      R15+0, 0
+	RETFIE
+; end of _interrupt
 
 _main:
 
+<<<<<<< Updated upstream
 ;AgriBot.c,276 :: 		void main(void)
 ;AgriBot.c,279 :: 		setup();
 	CALL       _setup+0
@@ -592,9 +752,31 @@ L_main22:
 	BSF        PORTB+0, 3
 ;AgriBot.c,346 :: 		Delay_us(15000);    // 90° position
 	MOVLW      39
+=======
+;AgriBot.c,497 :: 		void main(void)
+;AgriBot.c,499 :: 		setup();
+	CALL       _setup+0
+;AgriBot.c,501 :: 		Timer1_Init();
+	CALL       _Timer1_Init+0
+;AgriBot.c,502 :: 		Timer2_Init();
+	CALL       _Timer2_Init+0
+;AgriBot.c,504 :: 		PEIE_bit = 1;              // enable peripheral interrupts
+	BSF        PEIE_bit+0, BitPos(PEIE_bit+0)
+;AgriBot.c,505 :: 		GIE_bit  = 1;              // global interrupts
+	BSF        GIE_bit+0, BitPos(GIE_bit+0)
+;AgriBot.c,508 :: 		while (1)
+L_main4:
+;AgriBot.c,510 :: 		Set_Servo_Angle(0);    Delay_ms(1000);
+	CLRF       FARG_Set_Servo_Angle_angle+0
+	CALL       _Set_Servo_Angle+0
+	MOVLW      11
+	MOVWF      R11+0
+	MOVLW      38
+>>>>>>> Stashed changes
 	MOVWF      R12+0
-	MOVLW      245
+	MOVLW      93
 	MOVWF      R13+0
+<<<<<<< Updated upstream
 L_main24:
 	DECFSZ     R13+0, 1
 	GOTO       L_main24
@@ -617,6 +799,58 @@ L_main25:
 ;AgriBot.c,350 :: 		}
 	GOTO       L_main22
 ;AgriBot.c,352 :: 		}
+=======
+L_main6:
+	DECFSZ     R13+0, 1
+	GOTO       L_main6
+	DECFSZ     R12+0, 1
+	GOTO       L_main6
+	DECFSZ     R11+0, 1
+	GOTO       L_main6
+	NOP
+	NOP
+;AgriBot.c,511 :: 		Set_Servo_Angle(90);   Delay_ms(1000);
+	MOVLW      90
+	MOVWF      FARG_Set_Servo_Angle_angle+0
+	CALL       _Set_Servo_Angle+0
+	MOVLW      11
+	MOVWF      R11+0
+	MOVLW      38
+	MOVWF      R12+0
+	MOVLW      93
+	MOVWF      R13+0
+L_main7:
+	DECFSZ     R13+0, 1
+	GOTO       L_main7
+	DECFSZ     R12+0, 1
+	GOTO       L_main7
+	DECFSZ     R11+0, 1
+	GOTO       L_main7
+	NOP
+	NOP
+;AgriBot.c,512 :: 		Set_Servo_Angle(180);  Delay_ms(1000);
+	MOVLW      180
+	MOVWF      FARG_Set_Servo_Angle_angle+0
+	CALL       _Set_Servo_Angle+0
+	MOVLW      11
+	MOVWF      R11+0
+	MOVLW      38
+	MOVWF      R12+0
+	MOVLW      93
+	MOVWF      R13+0
+L_main8:
+	DECFSZ     R13+0, 1
+	GOTO       L_main8
+	DECFSZ     R12+0, 1
+	GOTO       L_main8
+	DECFSZ     R11+0, 1
+	GOTO       L_main8
+	NOP
+	NOP
+;AgriBot.c,513 :: 		}
+	GOTO       L_main4
+;AgriBot.c,514 :: 		}
+>>>>>>> Stashed changes
 L_end_main:
 	GOTO       $+0
 ; end of _main

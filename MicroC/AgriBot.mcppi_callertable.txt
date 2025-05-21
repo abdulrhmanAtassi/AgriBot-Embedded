@@ -2,6 +2,7 @@ main
 	__CC2DW
 		____DoICP
 	setup
+<<<<<<< Updated upstream
 		our_delay_ms
 	bluetooth_init
 		UART1_Init
@@ -16,4 +17,11 @@ main
 		Mul_8X8_U
 		Div_16x16_S
 			Div_16x16_S_L
+=======
+	Timer1_Init
+	Timer2_Init
+	Set_Servo_Angle
+		Mul_16X16_U
+		Div_16X16_U
+>>>>>>> Stashed changes
 interrupt

@@ -1,17 +1,16 @@
 #line 1 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/MicroC/AgriBot.c"
-#line 14 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/MicroC/AgriBot.c"
-char command;
+#line 413 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/MicroC/AgriBot.c"
+void setup (void);
+void Timer1_Init (void);
+void Timer2_Init (void);
+void Set_Servo_Angle(unsigned char angle);
 
 
-
-void our_delay_ms(unsigned int ms) {
- unsigned int i, j;
- for (i = 0; i < ms; i++) {
- for (j = 0; j < 111; j++) NOP();
- }
-}
+volatile unsigned int servo_pulse_us = 1500;
+volatile unsigned char pulse_started = 0;
 
 
+<<<<<<< Updated upstream
 
 
 unsigned int servo_pulse_us = 1500;
@@ -253,17 +252,104 @@ void main(void)
  Timer1_Init();
  Timer2_Init();
  Set_Servo_Angle(90);
+=======
+void setup(void)
+{
+
+ TRISB = 0x00;
+ PORTB = 0x00;
+
+
+>>>>>>> Stashed changes
  TRISB.F3 = 0;
  PORTB.F3 = 0;
+}
+
+
+void Timer1_Init(void)
+{
+#line 440 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/MicroC/AgriBot.c"
+ T1CON = 0b00000001;
+ TMR1H = 0x63;
+ TMR1L = 0xC0;
+ TMR1IF_bit = 0;
+ TMR1IE_bit = 1;
+}
+
+
+void Timer2_Init(void)
+{
+
+ T2CON = 0b00000100;
+ PR2 = 250;
+ TMR2IF_bit = 0;
+ TMR2IE_bit = 1;
+}
+
+
+void Set_Servo_Angle(unsigned char angle)
+{
+
+ servo_pulse_us = ((unsigned int)angle * 1000u) / 180u + 1000u;
+}
+
+
+void interrupt(void)
+{
+
+ if (TMR1IF_bit)
+ {
+ unsigned int ticks;
+
+ TMR1IF_bit = 0;
+ TMR1H = 0x63;
+ TMR1L = 0xC0;
+
+ pulse_started = 1;
+ PORTB.F3 = 1;
+
+
+ ticks = servo_pulse_us / 8u;
+ PR2 = (unsigned char)ticks;
+ TMR2 = 0;
+ TMR2ON_bit = 1;
+ }
+
+
+ if (TMR2IF_bit && pulse_started)
+ {
+ TMR2IF_bit = 0;
+ TMR2ON_bit = 0;
+ PORTB.F3 = 0;
+ pulse_started = 0;
+ }
+}
+
+
+void main(void)
+{
+ setup();
+
+ Timer1_Init();
+ Timer2_Init();
+
+ PEIE_bit = 1;
+ GIE_bit = 1;
+
 
  while (1)
  {
+<<<<<<< Updated upstream
 #line 345 "C:/Users/20210651/Documents/GitHub/AgriBot-Embedded/MicroC/AgriBot.c"
  PORTB.F3 = 1;
  Delay_us(15000);
  PORTB.F3 = 0;
  Delay_ms(20);
 
+=======
+ Set_Servo_Angle(0); Delay_ms(1000);
+ Set_Servo_Angle(90); Delay_ms(1000);
+ Set_Servo_Angle(180); Delay_ms(1000);
+>>>>>>> Stashed changes
  }
-
 }
