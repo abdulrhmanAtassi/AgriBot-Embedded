@@ -1,10 +1,46 @@
 main
+	__CC2DW
+		____DoICP
 	setup
+		init_io
 		our_delay_ms
 	bluetooth_init
 		UART1_Init
 		our_delay_ms
 	initCutter
 	setupPWM
-		setSpeedLeft
-		setSpeedRight
+		setSpeed
+	init_ccp_servo
+	init_adc
+	servo_set_angle
+		Mul_32x32_U
+		Div_32x32_U
+	UART1_Data_Ready
+	UART1_Read
+	motors_forward
+		UART1_Data_Ready
+		UART1_Read
+		measure_distance
+			trigger_pulse
+			Div_16X16_U
+		motors_stop
+			setSpeed
+		setSpeed
+	motors_backward
+		setSpeed
+	motors_right
+		setSpeed
+	motors_left
+		setSpeed
+	motors_stop
+		setSpeed
+	cutter_on
+	cutter_off
+	read_soil_moisture_safe
+		read_adc
+	Mul_16X16_U
+	Div_16X16_U
+	servo_angle_direct
+		Mul_32x32_U
+		Div_32x32_U
+interrupt
