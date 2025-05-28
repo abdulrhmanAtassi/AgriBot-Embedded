@@ -64,7 +64,7 @@ L_interrupt2:
 L_interrupt0:
 ;AgriBot.c,55 :: 		}
 L_end_interrupt:
-L__interrupt83:
+L__interrupt82:
 	MOVF       ___savePCLATH+0, 0
 	MOVWF      PCLATH+0
 	SWAPF      ___saveSTATUS+0, 0
@@ -120,10 +120,10 @@ _servo_set_angle:
 	MOVF       FARG_servo_set_angle_angle+1, 0
 	SUBLW      1
 	BTFSS      STATUS+0, 2
-	GOTO       L__servo_set_angle86
+	GOTO       L__servo_set_angle85
 	MOVF       FARG_servo_set_angle_angle+0, 0
 	SUBLW      104
-L__servo_set_angle86:
+L__servo_set_angle85:
 	BTFSC      STATUS+0, 0
 	GOTO       L_servo_set_angle3
 	MOVLW      104
@@ -235,10 +235,10 @@ L_servo_angle_direct4:
 	MOVLW      0
 	SUBWF      servo_angle_direct_i_L0+1, 0
 	BTFSS      STATUS+0, 2
-	GOTO       L__servo_angle_direct88
+	GOTO       L__servo_angle_direct87
 	MOVLW      50
 	SUBWF      servo_angle_direct_i_L0+0, 0
-L__servo_angle_direct88:
+L__servo_angle_direct87:
 	BTFSC      STATUS+0, 0
 	GOTO       L_servo_angle_direct5
 ;AgriBot.c,112 :: 		TMR1H = 0;
@@ -343,10 +343,10 @@ L_our_delay_ms11:
 	MOVF       FARG_our_delay_ms_ms+1, 0
 	SUBWF      R1+1, 0
 	BTFSS      STATUS+0, 2
-	GOTO       L__our_delay_ms90
+	GOTO       L__our_delay_ms89
 	MOVF       FARG_our_delay_ms_ms+0, 0
 	SUBWF      R1+0, 0
-L__our_delay_ms90:
+L__our_delay_ms89:
 	BTFSC      STATUS+0, 0
 	GOTO       L_our_delay_ms12
 ;AgriBot.c,146 :: 		for (j = 0; j < 111; j++) NOP();
@@ -356,10 +356,10 @@ L_our_delay_ms14:
 	MOVLW      0
 	SUBWF      R3+1, 0
 	BTFSS      STATUS+0, 2
-	GOTO       L__our_delay_ms91
+	GOTO       L__our_delay_ms90
 	MOVLW      111
 	SUBWF      R3+0, 0
-L__our_delay_ms91:
+L__our_delay_ms90:
 	BTFSC      STATUS+0, 0
 	GOTO       L_our_delay_ms15
 	NOP
@@ -425,10 +425,10 @@ L_measure_distance18:
 	MOVLW      0
 	XORWF      measure_distance_timeout_L0+1, 0
 	BTFSS      STATUS+0, 2
-	GOTO       L__measure_distance94
+	GOTO       L__measure_distance93
 	MOVLW      0
 	XORWF      measure_distance_timeout_L0+0, 0
-L__measure_distance94:
+L__measure_distance93:
 	BTFSS      STATUS+0, 2
 	GOTO       L_measure_distance20
 ;AgriBot.c,211 :: 		return 0;  // Timeout prevention, no object detected
@@ -472,10 +472,10 @@ L_measure_distance21:
 	MOVF       measure_distance_timer0_overflow_L0+1, 0
 	SUBLW      0
 	BTFSS      STATUS+0, 2
-	GOTO       L__measure_distance95
+	GOTO       L__measure_distance94
 	MOVF       measure_distance_timer0_overflow_L0+0, 0
 	SUBLW      200
-L__measure_distance95:
+L__measure_distance94:
 	BTFSC      STATUS+0, 0
 	GOTO       L_measure_distance24
 ;AgriBot.c,229 :: 		return 0;  // Timeout prevention
@@ -494,10 +494,10 @@ L_measure_distance23:
 	MOVLW      0
 	XORWF      measure_distance_timeout_L0+1, 0
 	BTFSS      STATUS+0, 2
-	GOTO       L__measure_distance96
+	GOTO       L__measure_distance95
 	MOVLW      0
 	XORWF      measure_distance_timeout_L0+0, 0
-L__measure_distance96:
+L__measure_distance95:
 	BTFSS      STATUS+0, 2
 	GOTO       L_measure_distance25
 ;AgriBot.c,233 :: 		return 0;  // Timeout prevention
@@ -624,10 +624,10 @@ L_motors_forward28:
 	MOVLW      0
 	SUBWF      R0+1, 0
 	BTFSS      STATUS+0, 2
-	GOTO       L__motors_forward104
+	GOTO       L__motors_forward103
 	MOVLW      10
 	SUBWF      R0+0, 0
-L__motors_forward104:
+L__motors_forward103:
 	BTFSC      STATUS+0, 0
 	GOTO       L_motors_forward29
 ;AgriBot.c,299 :: 		motors_stop();
@@ -819,10 +819,10 @@ L_delay_ms37:
 	MOVF       FARG_delay_ms_ms+1, 0
 	SUBWF      R1+1, 0
 	BTFSS      STATUS+0, 2
-	GOTO       L__delay_ms114
+	GOTO       L__delay_ms113
 	MOVF       FARG_delay_ms_ms+0, 0
 	SUBWF      R1+0, 0
-L__delay_ms114:
+L__delay_ms113:
 	BTFSC      STATUS+0, 0
 	GOTO       L_delay_ms38
 ;AgriBot.c,379 :: 		for(j = 0; j < 330; j++) {
@@ -832,10 +832,10 @@ L_delay_ms40:
 	MOVLW      1
 	SUBWF      R3+1, 0
 	BTFSS      STATUS+0, 2
-	GOTO       L__delay_ms115
+	GOTO       L__delay_ms114
 	MOVLW      74
 	SUBWF      R3+0, 0
-L__delay_ms115:
+L__delay_ms114:
 	BTFSC      STATUS+0, 0
 	GOTO       L_delay_ms41
 ;AgriBot.c,380 :: 		asm nop;
@@ -935,12 +935,12 @@ _read_soil_moisture_safe:
 	BCF        INTCON+0, 7
 ;AgriBot.c,430 :: 		INTCON.GIE = old_gie;  // Restore interrupts
 	BTFSC      read_soil_moisture_safe_old_gie_L0+0, 0
-	GOTO       L__read_soil_moisture_safe119
+	GOTO       L__read_soil_moisture_safe118
 	BCF        INTCON+0, 7
-	GOTO       L__read_soil_moisture_safe120
-L__read_soil_moisture_safe119:
+	GOTO       L__read_soil_moisture_safe119
+L__read_soil_moisture_safe118:
 	BSF        INTCON+0, 7
-L__read_soil_moisture_safe120:
+L__read_soil_moisture_safe119:
 ;AgriBot.c,431 :: 		return result;
 ;AgriBot.c,432 :: 		}
 L_end_read_soil_moisture_safe:
@@ -1215,10 +1215,10 @@ L_main67:
 	MOVF       FLOC__main+1, 0
 	SUBLW      1
 	BTFSS      STATUS+0, 2
-	GOTO       L__main123
+	GOTO       L__main122
 	MOVF       FLOC__main+0, 0
 	SUBLW      244
-L__main123:
+L__main122:
 	BTFSC      STATUS+0, 0
 	GOTO       L_main68
 ;AgriBot.c,534 :: 		PORTB.B6 = 1;
@@ -1248,91 +1248,98 @@ L_main68:
 	BCF        PORTB+0, 6
 ;AgriBot.c,548 :: 		}
 L_main70:
-;AgriBot.c,551 :: 		Delay_ms(1000);
+;AgriBot.c,553 :: 		PIE1.CCP1IE = 1;       // Re-enable CCP1 interrupt
+	BSF        PIE1+0, 2
+;AgriBot.c,556 :: 		for(angle = 0; angle <= 360; angle += 10) {
+	CLRF       main_angle_L0+0
+	CLRF       main_angle_L0+1
+L_main71:
+	MOVF       main_angle_L0+1, 0
+	SUBLW      1
+	BTFSS      STATUS+0, 2
+	GOTO       L__main123
+	MOVF       main_angle_L0+0, 0
+	SUBLW      104
+L__main123:
+	BTFSS      STATUS+0, 0
+	GOTO       L_main72
+;AgriBot.c,557 :: 		servo_angle_direct(angle);
+	MOVF       main_angle_L0+0, 0
+	MOVWF      FARG_servo_angle_direct_angle+0
+	MOVF       main_angle_L0+1, 0
+	MOVWF      FARG_servo_angle_direct_angle+1
+	CALL       _servo_angle_direct+0
+;AgriBot.c,558 :: 		Delay_ms(100);
+	MOVLW      2
+	MOVWF      R11+0
+	MOVLW      4
+	MOVWF      R12+0
+	MOVLW      186
+	MOVWF      R13+0
+L_main74:
+	DECFSZ     R13+0, 1
+	GOTO       L_main74
+	DECFSZ     R12+0, 1
+	GOTO       L_main74
+	DECFSZ     R11+0, 1
+	GOTO       L_main74
+	NOP
+;AgriBot.c,556 :: 		for(angle = 0; angle <= 360; angle += 10) {
+	MOVLW      10
+	ADDWF      main_angle_L0+0, 1
+	BTFSC      STATUS+0, 0
+	INCF       main_angle_L0+1, 1
+;AgriBot.c,559 :: 		}
+	GOTO       L_main71
+L_main72:
+;AgriBot.c,561 :: 		for(angle = 0; angle <= 180; angle += 10) {
+	CLRF       main_angle_L0+0
+	CLRF       main_angle_L0+1
+L_main75:
+	MOVF       main_angle_L0+1, 0
+	SUBLW      0
+	BTFSS      STATUS+0, 2
+	GOTO       L__main124
+	MOVF       main_angle_L0+0, 0
+	SUBLW      180
+L__main124:
+	BTFSS      STATUS+0, 0
+	GOTO       L_main76
+;AgriBot.c,562 :: 		servo_angle_direct(angle);
+	MOVF       main_angle_L0+0, 0
+	MOVWF      FARG_servo_angle_direct_angle+0
+	MOVF       main_angle_L0+1, 0
+	MOVWF      FARG_servo_angle_direct_angle+1
+	CALL       _servo_angle_direct+0
+;AgriBot.c,563 :: 		Delay_ms(100);
+	MOVLW      2
+	MOVWF      R11+0
+	MOVLW      4
+	MOVWF      R12+0
+	MOVLW      186
+	MOVWF      R13+0
+L_main78:
+	DECFSZ     R13+0, 1
+	GOTO       L_main78
+	DECFSZ     R12+0, 1
+	GOTO       L_main78
+	DECFSZ     R11+0, 1
+	GOTO       L_main78
+	NOP
+;AgriBot.c,561 :: 		for(angle = 0; angle <= 180; angle += 10) {
+	MOVLW      10
+	ADDWF      main_angle_L0+0, 1
+	BTFSC      STATUS+0, 0
+	INCF       main_angle_L0+1, 1
+;AgriBot.c,564 :: 		}
+	GOTO       L_main75
+L_main76:
+;AgriBot.c,566 :: 		Delay_ms(1000);
 	MOVLW      11
 	MOVWF      R11+0
 	MOVLW      38
 	MOVWF      R12+0
 	MOVLW      93
-	MOVWF      R13+0
-L_main71:
-	DECFSZ     R13+0, 1
-	GOTO       L_main71
-	DECFSZ     R12+0, 1
-	GOTO       L_main71
-	DECFSZ     R11+0, 1
-	GOTO       L_main71
-	NOP
-	NOP
-;AgriBot.c,554 :: 		PIE1.CCP1IE = 1;       // Re-enable CCP1 interrupt
-	BSF        PIE1+0, 2
-;AgriBot.c,557 :: 		for(angle = 0; angle <= 360; angle += 10) {
-	CLRF       main_angle_L0+0
-	CLRF       main_angle_L0+1
-L_main72:
-	MOVF       main_angle_L0+1, 0
-	SUBLW      1
-	BTFSS      STATUS+0, 2
-	GOTO       L__main124
-	MOVF       main_angle_L0+0, 0
-	SUBLW      104
-L__main124:
-	BTFSS      STATUS+0, 0
-	GOTO       L_main73
-;AgriBot.c,558 :: 		servo_angle_direct(angle);
-	MOVF       main_angle_L0+0, 0
-	MOVWF      FARG_servo_angle_direct_angle+0
-	MOVF       main_angle_L0+1, 0
-	MOVWF      FARG_servo_angle_direct_angle+1
-	CALL       _servo_angle_direct+0
-;AgriBot.c,559 :: 		Delay_ms(100);
-	MOVLW      2
-	MOVWF      R11+0
-	MOVLW      4
-	MOVWF      R12+0
-	MOVLW      186
-	MOVWF      R13+0
-L_main75:
-	DECFSZ     R13+0, 1
-	GOTO       L_main75
-	DECFSZ     R12+0, 1
-	GOTO       L_main75
-	DECFSZ     R11+0, 1
-	GOTO       L_main75
-	NOP
-;AgriBot.c,557 :: 		for(angle = 0; angle <= 360; angle += 10) {
-	MOVLW      10
-	ADDWF      main_angle_L0+0, 1
-	BTFSC      STATUS+0, 0
-	INCF       main_angle_L0+1, 1
-;AgriBot.c,560 :: 		}
-	GOTO       L_main72
-L_main73:
-;AgriBot.c,562 :: 		for(angle = 0; angle <= 180; angle += 10) {
-	CLRF       main_angle_L0+0
-	CLRF       main_angle_L0+1
-L_main76:
-	MOVF       main_angle_L0+1, 0
-	SUBLW      0
-	BTFSS      STATUS+0, 2
-	GOTO       L__main125
-	MOVF       main_angle_L0+0, 0
-	SUBLW      180
-L__main125:
-	BTFSS      STATUS+0, 0
-	GOTO       L_main77
-;AgriBot.c,563 :: 		servo_angle_direct(angle);
-	MOVF       main_angle_L0+0, 0
-	MOVWF      FARG_servo_angle_direct_angle+0
-	MOVF       main_angle_L0+1, 0
-	MOVWF      FARG_servo_angle_direct_angle+1
-	CALL       _servo_angle_direct+0
-;AgriBot.c,564 :: 		Delay_ms(100);
-	MOVLW      2
-	MOVWF      R11+0
-	MOVLW      4
-	MOVWF      R12+0
-	MOVLW      186
 	MOVWF      R13+0
 L_main79:
 	DECFSZ     R13+0, 1
@@ -1342,20 +1349,17 @@ L_main79:
 	DECFSZ     R11+0, 1
 	GOTO       L_main79
 	NOP
-;AgriBot.c,562 :: 		for(angle = 0; angle <= 180; angle += 10) {
-	MOVLW      10
-	ADDWF      main_angle_L0+0, 1
-	BTFSC      STATUS+0, 0
-	INCF       main_angle_L0+1, 1
-;AgriBot.c,565 :: 		}
-	GOTO       L_main76
-L_main77:
-;AgriBot.c,567 :: 		Delay_ms(1000);
-	MOVLW      11
+	NOP
+;AgriBot.c,569 :: 		servo_angle_direct(0);
+	CLRF       FARG_servo_angle_direct_angle+0
+	CLRF       FARG_servo_angle_direct_angle+1
+	CALL       _servo_angle_direct+0
+;AgriBot.c,570 :: 		Delay_ms(2000);
+	MOVLW      21
 	MOVWF      R11+0
-	MOVLW      38
+	MOVLW      75
 	MOVWF      R12+0
-	MOVLW      93
+	MOVLW      190
 	MOVWF      R13+0
 L_main80:
 	DECFSZ     R13+0, 1
@@ -1365,29 +1369,9 @@ L_main80:
 	DECFSZ     R11+0, 1
 	GOTO       L_main80
 	NOP
-	NOP
-;AgriBot.c,570 :: 		servo_angle_direct(0);
-	CLRF       FARG_servo_angle_direct_angle+0
-	CLRF       FARG_servo_angle_direct_angle+1
-	CALL       _servo_angle_direct+0
-;AgriBot.c,571 :: 		Delay_ms(2000);
-	MOVLW      21
-	MOVWF      R11+0
-	MOVLW      75
-	MOVWF      R12+0
-	MOVLW      190
-	MOVWF      R13+0
-L_main81:
-	DECFSZ     R13+0, 1
-	GOTO       L_main81
-	DECFSZ     R12+0, 1
-	GOTO       L_main81
-	DECFSZ     R11+0, 1
-	GOTO       L_main81
-	NOP
-;AgriBot.c,573 :: 		break;
+;AgriBot.c,572 :: 		break;
 	GOTO       L_main51
-;AgriBot.c,574 :: 		}
+;AgriBot.c,573 :: 		}
 L_main50:
 	MOVF       _command+0, 0
 	XORLW      70
@@ -1438,11 +1422,11 @@ L_main50:
 	BTFSC      STATUS+0, 2
 	GOTO       L_main63
 L_main51:
-;AgriBot.c,575 :: 		}
+;AgriBot.c,574 :: 		}
 L_main49:
-;AgriBot.c,576 :: 		}
+;AgriBot.c,575 :: 		}
 	GOTO       L_main47
-;AgriBot.c,577 :: 		}
+;AgriBot.c,576 :: 		}
 L_end_main:
 	GOTO       $+0
 ; end of _main

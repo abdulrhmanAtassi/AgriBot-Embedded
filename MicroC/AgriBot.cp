@@ -495,7 +495,6 @@ void main(void)
  }
 
 
- Delay_ms(1000);
 
 
  PIE1.CCP1IE = 1;
