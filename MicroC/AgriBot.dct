@@ -155,6 +155,8 @@ cren
 cren_bit
 csrc
 csrc_bit
+custom_delay_ms
+custom_delay_us
 cutter_off
 cutter_on
 cvr0
@@ -198,7 +200,6 @@ delay_5ms
 delay_80us
 delay_8ms
 delay_cyc
-delay_ms
 div
 div_16x16_s
 div_16x16_s_l
@@ -360,7 +361,6 @@ obf_trise_bit
 oerr
 oerr_bit
 option_reg
-our_delay_ms
 p
 p_bit
 pcfg0

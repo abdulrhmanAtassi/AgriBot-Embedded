@@ -3,15 +3,17 @@ main
 		____DoICP
 	setup
 		init_io
-		our_delay_ms
+		custom_delay_ms
 	bluetooth_init
 		UART1_Init
-		our_delay_ms
+		custom_delay_ms
 	initCutter
 	setupPWM
 		setSpeed
 	init_ccp_servo
 	init_adc
+		custom_delay_us
+	custom_delay_us
 	servo_set_angle
 		Mul_32x32_U
 		Div_32x32_U
@@ -22,6 +24,7 @@ main
 		UART1_Read
 		measure_distance
 			trigger_pulse
+				custom_delay_us
 			Div_16X16_U
 		motors_stop
 			setSpeed
@@ -36,8 +39,10 @@ main
 		setSpeed
 	cutter_on
 	cutter_off
+	custom_delay_ms
 	read_soil_moisture_safe
 		read_adc
+			custom_delay_us
 	Mul_16X16_U
 	Div_16X16_U
 	servo_angle_direct
