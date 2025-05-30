@@ -15,14 +15,10 @@
 - [Installation & Setup](#installation--setup)
 - [Usage](#usage)
 - [Technical Specifications](#technical-specifications)
-- [Project Structure](#project-structure)
-
 - [Results & Performance](#results--performance)
 - [Challenges & Future Improvements](#challenges--future-improvements)
 - [Contributing](#contributing)
-
 - [Team](#team)
-- [License](#license)
 
 ## 🌟 Overview
 
@@ -168,13 +164,6 @@ The system addresses the growing need for automation in gardening and agricultur
 | **Operating Temperature** | 0°C to 50°C |
 | **Dimensions** | Custom chassis design |
 
-## 📁 Project Structure
-
-```
-AgriBot-Embedded/
-└── README.md
-```
-
 ## 📈 Results & Performance
 
 ### Test Results
@@ -200,34 +189,22 @@ AgriBot-Embedded/
 - **Battery life** limited for extended operations
 - **Soil sensor calibration** varies with soil density
 
-### Recommended Improvements
-- [ ] **Implement interrupt-driven rain detection** for immediate response
-- [ ] **Add command queue system** for better Bluetooth communication
-- [ ] **Integrate solar charging** for sustainable operation
-- [ ] **Add GPS navigation** for larger area coverage
-- [ ] **Implement machine learning** for irrigation pattern optimization
-- [ ] **Add multi-point soil sensing** for better accuracy
-- [ ] **Include weather API integration** for advanced planning
-
 ## 👥 Team
 
 **Princess Sumaya University for Technology**  
 *Computer Engineering Department - Embedded Systems Course (22442)*
 
-| Name | ID | Role |
-|------|----|----- |
-| **Sarah Al-Shobaki** | 20220188 | Hardware Design & Integration |
-| **Abdulrahman Atassi** | 20210651 | Software Development & Control Systems |
-| **Maryam Al-Omar** | 20210885 | Sensor Systems & Testing |
+* Sarah Al-Shobaki
+
+* Abdulrahman Atassi
+
+* Maryam Al-Omar 
+
 
 ### Supervision
 - **Instructor**: Prof. Belal Sababha
 - **Supervisor**: Eng. Saad Al-Zoubi
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
+    
 ## 🔗 Links
 
 - **GitHub Repository**: [https://github.com/abdulrhmanAtassi/AgriBot-Embedded](https://github.com/abdulrhmanAtassi/AgriBot-Embedded)
