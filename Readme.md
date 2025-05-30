@@ -225,11 +225,3 @@ For questions, suggestions, or collaboration opportunities:
 *Made with ❤️ by the AgriBot Team | May 2025*
 
 ---
-
-### 🏆 Acknowledgments
-
-Special thanks to:
-- Princess Sumaya University for Technology
-- The Embedded Systems course instructors
-- All team members who contributed to this project
-- The open-source community for inspiration and resources
