@@ -4,7 +4,7 @@
 
 > An intelligent, Bluetooth-controlled robotic system designed for efficient lawn maintenance and smart irrigation management.
 
-![AgriBot Robot](https://via.placeholder.com/600x400/4CAF50/ffffff?text=AgriBot+Robot+Image+Placeholder)
+![AgriBot Robot](./Pictures/1.png)
 
 ## 📋 Table of Contents
 
