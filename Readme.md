@@ -210,7 +210,7 @@ The system addresses the growing need for automation in gardening and agricultur
 ## 🔗 Links
 
 - **GitHub Repository**: [https://github.com/abdulrhmanAtassi/AgriBot-Embedded](https://github.com/abdulrhmanAtassi/AgriBot-Embedded)
-- **Project Video**: [YouTube Demo](https://youtube.com/placeholder)
+- **Project Video**: [YouTube Demo](https://youtube.com/shorts/-cUa-Nlyp3A?feature=share)
 - **University Website**: [Princess Sumaya University for Technology](https://www.psut.edu.jo/)
 
 ## 📞 Contact
